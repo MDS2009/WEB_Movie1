@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Кинотеатр - Онлайн-кинотеатр</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header id="header">
+        <div class="container">
+            <div class="logo" id="logo">
+                МОЙ КИНОТЕАТР
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link active" data-page="main">Главная</a></li>
+                    <li><a href="#" class="nav-link" data-page="films">Фильмы</a></li>
+                    <li><a href="#" class="nav-link" data-page="series">Сериалы</a></li>
+                    <li><a href="#" class="nav-link" data-page="about">О нас</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="search-container">
+                    <button id="search-btn"><i class="fas fa-search"></i></button>
+                    <input type="text" class="search-input" placeholder="Поиск...">
+                </div>
+                <button id="login-btn"><i class="fas fa-user"></i> Войти</button>
+            </div>
+            <button class="hamburger">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="container" id="main-content">
+        <!-- Герой-слайдер -->
+        <section class="hero">
+            <div class="hero-slide active" style="background-image: url('https://via.placeholder.com/1920x800');">
+                <div class="hero-content">
+                    <h1>НОВИНКИ КИНО</h1>
+                    <p>Смотрите лучшие фильмы и сериалы в отличном качестве</p>
+                    <button class="btn btn-primary">Смотреть сейчас</button>
+                </div>
+            </div>
+            <div class="hero-indicators"></div>
+        </section>
+
+        <!-- Секция с фильмами -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Популярные фильмы</h2>
+                <a href="#" class="section-link" id="all-films-link">
+                    Смотреть все <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+            <div class="carousel" id="films-carousel">
+                <!-- Фильмы будут добавлены через JavaScript -->
+            </div>
+        </section>
+
+        <!-- Секция с сериалами -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Популярные сериалы</h2>
+                <a href="#" class="section-link" id="all-series-link">
+                    Смотреть все <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+            <div class="carousel" id="series-carousel">
+                <!-- Сериалы будут добавлены через JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>О нас</h3>
+                    <p>Лучший онлайн-кинотеатр с большой коллекцией фильмов и сериалов</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Разделы</h3>
+                    <ul>
+                        <li><a href="#" data-page="films">Фильмы</a></li>
+                        <li><a href="#" data-page="series">Сериалы</a></li>
+                        <li><a href="#" data-page="about">О нас</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <p>Email: info@mycinema.ru</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Мой Кинотеатр. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Скрипты -->
+    <script src="js/script.js"></script>
+</body>
+</html>

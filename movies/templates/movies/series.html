@@ -1,0 +1,32 @@
+{% extends 'movies/base.html' %}
+{% block title %}Сериалы — RV КИНО{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Каталог сериалов</h1>
+    </div>
+</section>
+<section class="movies-section">
+    <div class="container">
+        <div class="movies-grid">
+            {% for series in series %}
+            <div class="movie-card">
+                {% if series.poster %}
+                    <img src="{{ series.poster.url }}" alt="{{ series.title }}">
+                {% else %}
+                    <div class="no-poster"><i class="fas fa-film"></i></div>
+                {% endif %}
+                <div class="movie-info">
+                    <h3>{{ series.title }}</h3>
+                    <p class="movie-year">{{ series.year }}</p>
+                    <p class="movie-rating"><i class="fas fa-star"></i> {{ series.rating }}</p>
+                    <a href="{% url 'movies:detail' series.id %}" class="btn">Подробнее</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>Сериалов пока нет.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

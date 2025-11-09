@@ -1,6 +1,6 @@
-
 from django.shortcuts import render, get_object_or_404
 from .models import Movie
+from .models import Series
 
 def index(request):
     """Главная страница"""
@@ -40,6 +40,31 @@ def movie_detail(request, movie_id):
         'page_title': movie.title
     }
     return render(request, 'movies/detail.html', context)
+
+def series_list(request):
+    # Получаем только сериалы
+    series = Movie.objects.filter(type='series', is_active=True)
+    context = {
+        'series': series,
+        'page_title': 'Сериалы'
+    }
+    return render(request, 'movies/series.html', context)
+
+def series_detail(request, series_id):
+    """Детальная страница сериала"""
+    # Получаем сериал по ID или показываем 404
+    series = get_object_or_404(Series, id=series_id, is_active=True)
+
+    # Увеличиваем счётчик просмотров
+    series.views += 1
+    series.save()
+
+    context = {
+        'series': series,
+        'page_title': series.title
+    }
+    return render(request, 'movies/detail_series.html', context)
+
 
 
 def about(request):
