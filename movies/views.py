@@ -42,13 +42,9 @@ def movie_detail(request, movie_id):
     return render(request, 'movies/detail.html', context)
 
 def series_list(request):
-    # Получаем только сериалы
-    series = Movie.objects.filter(type='series', is_active=True)
-    context = {
-        'series': series,
-        'page_title': 'Сериалы'
-    }
-    return render(request, 'movies/series.html', context)
+    series = Series.objects.filter(is_active=True)
+    return render(request, 'movies/series.html', {'series': series, 'page_title': 'Каталог сериалов'})
+
 
 def series_detail(request, series_id):
     """Детальная страница сериала"""

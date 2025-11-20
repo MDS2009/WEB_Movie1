@@ -11,4 +11,3 @@ urlpatterns = [
     path('series/<int:series_id>/', views.series_detail, name='detail_series'),
     path('about/', views.about, name='about'),
 ]
-
