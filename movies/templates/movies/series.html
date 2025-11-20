@@ -20,7 +20,7 @@
                     <h3>{{ series.title }}</h3>
                     <p class="movie-year">{{ series.year }}</p>
                     <p class="movie-rating"><i class="fas fa-star"></i> {{ series.rating }}</p>
-                    <a href="{% url 'movies:detail' series.id %}" class="btn">Подробнее</a>
+                    <a href="{% url 'movies:detail_series' series.id %}" class="btn">Подробнее</a>
                 </div>
             </div>
             {% empty %}
