@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-i%@xrkn@0q0av-5+#a-#0*2q7=)^@iy7d4rks72dgky#3((l5e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://rvkino.pythonanywhere.com/']
 
 
 # Application definition
