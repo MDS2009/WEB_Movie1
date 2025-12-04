@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Movie
 from .models import Series
 
@@ -13,7 +13,7 @@ def index(request):
     }
     return render(request, 'movies/index.html', context)
 
-
+# Фильмы
 def movies_list(request):
     """Каталог всех фильмов"""
     # Получаем все активные фильмы
@@ -41,6 +41,13 @@ def movie_detail(request, movie_id):
     }
     return render(request, 'movies/detail.html', context)
 
+def movie_watch(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+    if movie.video_url:
+        return redirect(movie.video_url)
+    return render(request, 'movies/not_available.html', {'obj': movie, 'type': 'фильм'})
+
+# Сериалы
 def series_list(request):
     series = Series.objects.filter(is_active=True)
     return render(request, 'movies/series.html', {'series': series, 'page_title': 'Каталог сериалов'})
@@ -61,8 +68,13 @@ def series_detail(request, series_id):
     }
     return render(request, 'movies/detail_series.html', context)
 
+def series_watch(request, series_id):
+    series = get_object_or_404(Series, id=series_id)
+    if series.video_url:
+        return redirect(series.video_url)
+    return render(request, 'movies/not_available.html', {'obj': series, 'type': 'сериал'})
 
-
+#О нас
 def about(request):
     """Страница О нас"""
     context = {

@@ -1,6 +1,52 @@
 {% extends 'movies/base.html' %}
+
+{% block title %}Профиль пользователя - RV КИНО{% endblock %}
+
 {% block content %}
-<h2>Профиль пользователя</h2>
-<p>Добро пожаловать, {{ user.username }}!</p>
-<p>Email: {{ user.email }}</p>
+<div class="profile-wrapper">
+  <div class="profile-card">
+    <h1>Профиль пользователя</h1>
+
+    <p class="profile-welcome">Добро пожаловать, {{ user.username }}!</p>
+
+    <div class="profile-info">
+      <p><span>Имя пользователя:</span> {{ user.username }}</p>
+      <p><span>Email:</span> {{ user.email|default:"не указан" }}</p>
+    </div>
+
+    <hr class="profile-divider">
+
+    <h2 class="profile-subtitle">Согласия</h2>
+    <form method="post" class="profile-consent-form">
+      {% csrf_token %}
+      <label class="checkbox-row">
+        <input type="checkbox" name="accepted_privacy"
+               {% if accepted_privacy %}checked{% endif %}>
+        <span>Я принимаю <span class="nbsp"> </span>
+          <a href="{% url 'users:privacy' %}" target="_blank" class="legal-link">
+            политику конфиденциальности
+          </a>
+        </span>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" name="accepted_terms"
+               {% if accepted_terms %}checked{% endif %}>
+        <span>Я принимаю <span class="nbsp"> </span>
+          <a href="{% url 'users:terms' %}" target="_blank" class="legal-link">
+            пользовательское соглашение
+          </a>
+        </span>
+      </label>
+
+      <button type="submit" class="btn auth-btn">Сохранить</button>
+    </form>
+
+    {% if accepted_at %}
+      <p class="profile-consent-info">
+        Согласия приняты: {{ accepted_at }}
+      </p>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

@@ -1,16 +1,31 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #141414; color: #fff; font-family: Arial, sans-serif; }
+html, body { height: 100%; max-width: 100%; overflow-x: hidden}
+body { display: flex; flex-direction: column; background: #141414; color: #fff; font-family: Arial, sans-serif; }
+.content { flex: 1; }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
 .navbar { background: #000; padding: 1rem 0; border-bottom: 2px solid #e50914; }
-.logo { font-size: 1.5rem; font-weight: bold; color: #e50914; text-decoration: none; }
-.nav-menu { list-style: none; display: flex; gap: 2rem; }
+.navbar .container {display: flex; align-items: center; justify-content: flex-start; }
+
+.navbar { background: #000; padding: 1rem 0; border-bottom: 2px solid #e50914; position: relative; }
+.navbar .container { display: flex; align-items: center; justify-content: space-between; }
+
+.logo { display: inline-flex; align-items: center; margin-right: 60px; }
+.logo-img { height: 50px; display: block; }
+
+
+.nav-menu { list-style: none; display: flex; gap: 2rem; margin: 0; padding: 0; }
 .nav-menu a { color: #fff; text-decoration: none; transition: color 0.3s; }
 .nav-menu a:hover { color: #e50914; }
+
+.logout-form { list-style: none; display: flex; gap: 2rem; }
+.logout-link { color: #fff; text-decoration: none; transition: color 0.3s; }
+.logout-link:hover { color: #e50914; }
 
 .hero { background: linear-gradient(135deg,#e50914,#831010); text-align: center; padding: 4rem 0;}
 .hero h1 { font-size: 3rem; margin-bottom: 1rem;}
 .hero p { font-size: 1.2rem; opacity: 0.9;}
+.about-content h2 { margin-top: 10px; margin-bottom: 5px; }
 
 .movies-section { padding: 3rem 0; }
 .movies-section h2 { font-size: 2rem; margin-bottom: 2rem;}
@@ -24,6 +39,7 @@ body { background: #141414; color: #fff; font-family: Arial, sans-serif; }
 .btn { display: inline-block; background: #e50914; color: #fff; padding: 0.7rem 1.5rem; text-decoration: none; border-radius: 5px; transition: background 0.3s;}
 .btn:hover { background: #b20710; }
 
+.page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
 .page-header { background: #1a1a1a; padding: 2rem 0; border-bottom: 2px solid #e50914; }
 .page-header h1 { font-size: 2.5rem; }
 .movie-detail { padding: 3rem 0; }
@@ -36,9 +52,449 @@ body { background: #141414; color: #fff; font-family: Arial, sans-serif; }
 @media (max-width: 900px) {
   .detail-grid { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 600px) {
   .navbar .container, .footer .container, .hero .container, .movies-section .container { padding: 0 10px; }
   .nav-menu { gap: 1rem; font-size: 0.9rem; }
   .hero h1 { font-size: 1.6rem; }
   .movies-grid { grid-template-columns: 1fr; gap: 1rem;}
+}
+
+/* Полупрозрачный фон поверх сайта */
+.cookie-overlay {
+    position: fixed;
+    inset: 0; /* top:0; right:0; bottom:0; left:0; */
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Белый блок по центру */
+.cookie-overlay .cookie-banner { background: #ffffff;
+    color: #333333;
+    max-width: 600px;
+    width: 90%;
+    padding: 1.5rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    font-size: 0.95rem;
+}
+
+/* Заголовок */
+.cookie-overlay .cookie-banner h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+}
+
+/* Текст */
+.cookie-overlay .cookie-banner p {
+    margin: 0 0 1rem;
+}
+
+/* Кнопки */
+.cookie-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.cookie-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cookie-btn-primary {
+    background: #1a73e8;
+    color: #fff;
+}
+
+.cookie-btn-primary:hover {
+    background: #155fc0;
+}
+
+.cookie-btn-secondary {
+    background: #f1f3f4;
+    color: #333;
+}
+
+.cookie-btn-secondary:hover {
+    background: #e2e5e7;
+}
+
+/* ===== Модальное окно "фильм недоступен" ===== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;              /* скрыто по умолчанию */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-window {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 2rem 3rem;
+    border-radius: 10px;
+    max-width: 420px;
+    text-align: center;
+    border: 2px solid #e50914;
+}
+
+.modal-window h3 {
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+.modal-window p {
+    margin-bottom: 1.5rem;
+}
+
+.modal-btn {
+    background: #e50914;
+    border: none;
+    color: #fff;
+    padding: 0.6rem 1.4rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.modal-btn:hover {
+    background: #b20710;
+}
+
+/* Бургер-меню */
+
+.burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.burger span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: #fff;
+    border-radius: 2px;
+}
+
+/* Мобильная версия */
+
+@media (max-width: 786px) {
+    .hero .menu-open .hero-subtitle {
+        display: none;
+    }
+
+    .nav-menu {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: #000;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+        display: none;
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .burger {
+        display: flex;
+        z-index: 1100;
+    }
+
+    .logo {
+        margin-right: 0;
+    }
+}
+
+/* ===== Страницы авторизации / регистрации ===== */
+
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem 1rem;
+}
+
+.auth-card {
+    background: #1a1a1a;
+    border: 1px solid #e50914;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.auth-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="password"],
+.auth-card input[type="email"] {
+    padding: 0.5rem 0.75rem;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background: #111;
+    color: #fff;
+}
+
+.auth-card input:focus {
+    outline: none;
+    border-color: #e50914;
+    box-shadow: 0 0 0 1px #e50914;
+}
+
+.auth-btn {
+    width: 100%;
+    text-align: center;
+}
+
+.auth-extra {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.auth-extra a {
+    color: #e50914;
+    text-decoration: none;
+}
+
+.auth-extra a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 785px) {
+    .auth-card {
+        padding: 1.5rem 1.25rem;
+    }
+}
+
+.form-help {
+    font-size: 0.8rem;
+    color: #bbb;
+    line-height: 1.3;
+}
+
+.form-error {
+    font-size: 0.8rem;
+    color: #ff4d4f;
+    margin-top: 0.2rem;
+}
+
+/* ===== Профиль пользователя ===== */
+
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem 1rem;
+}
+
+.profile-card {
+    background: #1a1a1a;
+    border: 1px solid #e50914;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    margin: 0 auto;
+    margin-top: 48px;
+}
+
+.profile-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.profile-welcome {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.profile-info p {
+    margin: 0.4rem 0;
+}
+
+.profile-info span {
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.profile-actions {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+.profile-actions .btn {
+    min-width: 120px;
+}
+
+@media (max-width: 785px) {
+    .profile-card {
+        padding: 1.5rem 1.25rem;
+    }
+}
+
+.profile-divider {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 1.5rem 0 1rem;
+}
+
+.profile-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+}
+
+.profile-consent-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+}
+
+.profile-consent-info {
+    font-size: 0.8rem;
+    color: #bbb;
+}
+
+.legal-page {
+    background: #1a1a1a;
+    border: 1px solid #e50914;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    margin: 3rem auto;
+    max-width: 900px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    line-height: 1.6;
+}
+
+.legal-page h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.legal-page h2 {
+    font-size: 1.2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.6rem;
+}
+
+.legal-page p,
+.legal-page li {
+    font-size: 0.95rem;
+}
+
+.legal-intro {
+    margin-bottom: 1rem;
+}
+
+/* ссылки в блоке согласий профиля */
+.checkbox-row .legal-link {
+    color: #e50914;
+    text-decoration: none;
+}
+
+.checkbox-row .legal-link:hover {
+    text-decoration: underline;
+}
+
+/* ссылки в блоке согласий профиля */
+.checkbox-row span {
+    white-space: normal;       /* разрешаем перенос текста */
+}
+
+.checkbox-row .legal-link {
+    color: #e50914;
+    text-decoration: none;
+}
+
+/* мобильная версия — чуть уменьшить шрифт */
+@media (max-width: 785px) {
+    .checkbox-row {
+        font-size: 0.85rem;
+        align-items: flex-start;
+    }
+}
+
+/* ===== Правовые страницы (политика, соглашение) ===== */
+
+.legal-page {
+    background: #1a1a1a;
+    border: 1px solid #e50914;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    margin: 3rem auto;
+    max-width: 900px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    line-height: 1.6;
+}
+
+.legal-page h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Адаптация заголовка под мобильный экран */
+@media (max-width: 785px) {
+    .legal-page {
+        margin: 1.5rem 0.5rem;
+        padding: 1.5rem 1.25rem;
+    }
+
+    .legal-page h1 {
+        font-size: 1.4rem;
+        line-height: 1.2;
+    }
 }

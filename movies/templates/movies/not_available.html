@@ -1,0 +1,12 @@
+{% extends 'movies/base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ obj.title }}</h1>
+</div>
+
+<div class="movies-section">
+    <h2>Ой, этот {{ type }} ещё не вышел на нашей площадке.</h2>
+    <a href="javascript:history.back()" class="btn">Вернуться назад</a>
+</div>
+{% endblock %}

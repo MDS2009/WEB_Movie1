@@ -11,6 +11,7 @@ class Movie(models.Model):
     views = models.IntegerField('Просмотры', default=0)
     is_active = models.BooleanField('Активно', default=True)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
+    video_url = models.URLField('Ссылка на видео', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Фильм'
@@ -31,6 +32,7 @@ class Series(models.Model):
     views = models.IntegerField('Просмотры', default=0)
     is_active = models.BooleanField('Активно', default=True)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
+    video_url = models.URLField('Ссылка на видео', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Сериал'

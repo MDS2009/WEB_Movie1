@@ -25,8 +25,26 @@
                 </div>
                 <div class="actions">
                     <a href="{% url 'movies:films' %}" class="btn">← Назад к каталогу</a>
+                    {% if movie.video_url %}
+                        <!-- Есть ссылка — обычный переход -->
+                        <a href="{{ movie.video_url }}" class="btn" target="_blank" rel="noopener">
+                            Смотреть
+                        </a>
+                    {% else %}
+                        <!-- Нет ссылки — показываем модальное окно -->
+                        <button type="button" class="btn" id="watch-btn">
+                            Смотреть
+                        </button>
+                    {% endif %}
                 </div>
             </div>
+        </div>
+        <div class="modal-overlay" id="not-available-modal">
+          <div class="modal-window">
+            <h3>Ой!</h3>
+            <p>Этот фильм ещё не вышел на нашей площадке.</p>
+            <button type="button" class="modal-btn" id="modal-close-btn">Понятно</button>
+          </div>
         </div>
     </div>
 </section>

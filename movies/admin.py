@@ -25,7 +25,8 @@ class MovieAdmin(admin.ModelAdmin):
         'rating',
         'is_active',
         'views',
-        'created_at'
+        'created_at',
+        'video_url'
     ]
 
 @admin.register(Series)
@@ -52,5 +53,6 @@ class SeriesAdmin(admin.ModelAdmin):
         'rating',
         'is_active',
         'views',
-        'created_at'
+        'created_at',
+        'video_url'
     ]
