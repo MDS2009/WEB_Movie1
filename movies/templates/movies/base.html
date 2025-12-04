@@ -11,25 +11,31 @@
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="{% url 'movies:index' %}" class="logo"><i class="fas fa-film"></i> RV КИНО</a>
-            <ul class="nav-menu">
+            <a href="{% url 'movies:index' %}" class="logo">
+                <img src="{% static 'movies/images/logo_RV.png' %}" alt="RV" class="logo-img">
+            </a>
+            <button class="burger" id="burger-btn" aria-label="Открыть меню">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="nav-menu" aria-label="Меню">
                 <li><a href="{% url 'movies:index' %}">Главная</a></li>
                 <li><a href="{% url 'movies:films' %}">Фильмы</a></li>
                 <li><a href="{% url 'movies:series' %}">Сериалы</a></li>
                 <li><a href="{% url 'movies:about' %}">О нас</a></li>
-                <li><a href="/admin/">Админ</a></li>
-                <li>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'users:profile' %}">Аккаунт</a>
-                        <form method="post" action="{% url 'users:logout' %}">
-                            {% csrf_token %}
-                            <button type="submit">Выйти</button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'users:login' %}">Вход</a>
-                        <a href="{% url 'users:register' %}">Регистрация</a>
-                      {% endif %}
-                </li>
+
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'users:profile' %}">Аккаунт</a></li>
+                    {% if user.is_staff or user.is_superuser %}
+                        <li><a href="{% url 'admin:index' %}">Админ панель</a></li>
+                    {% endif %}
+                        <li><a href="{% url 'users:logout' %}">Выйти</a></li>
+                {% else %}
+                    <li><a href="{% url 'users:login' %}">Вход</a></li>
+                    <li><a href="{% url 'users:register' %}">Регистрация</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -39,9 +45,32 @@
     <footer class="footer">
         <div class="container">
             <p>&copy; 2025 RV КИНО. Все права защищены.</p>
-            <p>Email: info@rvkino.ru | Телефон: +7 (495) 123-45-67</p>
+            <p>Email: rv.kino.info@ya.ru | Телефон: +7 940 980 02-91</p>
         </div>
     </footer>
+    {% if not request.COOKIES.cookie_consent %}
+    <div class="cookie-overlay" id="cookie-modal">
+        <div class="cookie-banner">
+            <h3>Мы заботимся о ваших cookie</h3>
+            <p>
+                Этот сайт использует файлы cookie для улучшения работы сервиса.
+                Продолжая пользоваться сайтом, вы соглашаетесь с использованием cookie.
+            </p>
+            <div class="cookie-actions">
+                <button type="button"
+                        class="cookie-btn cookie-btn-secondary"
+                        id="cookie-decline-btn">
+                    Отклонить
+                </button>
+                <button type="button"
+                        class="cookie-btn cookie-btn-primary"
+                        id="cookie-accept-btn">
+                    Принять
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <script src="{% static 'movies/js/app.js' %}"></script>
 </body>
 </html>
