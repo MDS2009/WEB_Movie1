@@ -45,9 +45,32 @@
     <footer class="footer">
         <div class="container">
             <p>&copy; 2025 RV КИНО. Все права защищены.</p>
-            <p>Email: rv.kino.info@ya.ru | Телефон: +7 940 980 02-91</p>
+            <p>Email: rvkinopro@gmail.com | Телефон: +7 916 087 69 20</p>
         </div>
     </footer>
+
+    <div class="modal-overlay" id="player-modal">
+      <div class="modal-window" style="max-width: 900px; width: 95%; padding: 1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px;">
+          <h3 id="player-title" style="margin:0;">Плеер</h3>
+          <button class="modal-btn" id="player-close-btn" type="button">Закрыть</button>
+        </div>
+
+        <div class="player-body">
+            <p id="player-message" class="player-message">
+            Ой, этого еще у нас нет, но скоро появится
+            </p>
+
+            <iframe id="player-iframe"
+                  src=""
+                  allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;"
+                  allowfullscreen>
+            </iframe>
+        </div>
+      </div>
+    </div>
+
+
     {% if not request.COOKIES.cookie_consent %}
     <div class="cookie-overlay" id="cookie-modal">
         <div class="cookie-banner">

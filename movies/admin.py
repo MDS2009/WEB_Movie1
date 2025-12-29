@@ -18,7 +18,11 @@ class MovieAdmin(admin.ModelAdmin):
     # Порядок полей в форме редактирования
     fields = [
         'title',
-        'description', 
+        'description',
+        'age_rating',
+        'actors',
+        'director',
+        'producer',
         'poster',
         'year',
         'duration',
@@ -26,7 +30,8 @@ class MovieAdmin(admin.ModelAdmin):
         'is_active',
         'views',
         'created_at',
-        'video_url'
+        'video_url',
+        'trailer_url'
     ]
 
 @admin.register(Series)
@@ -47,6 +52,10 @@ class SeriesAdmin(admin.ModelAdmin):
     fields = [
         'title',
         'description',
+        'age_rating',
+        'actors',
+        'director',
+        'producer',
         'poster',
         'year',
         'duration',
@@ -55,4 +64,5 @@ class SeriesAdmin(admin.ModelAdmin):
         'views',
         'created_at',
         'video_url'
+        'trailer_url'
     ]

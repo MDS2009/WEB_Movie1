@@ -12,6 +12,11 @@ class Movie(models.Model):
     is_active = models.BooleanField('Активно', default=True)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
     video_url = models.URLField('Ссылка на видео', blank=True, null=True)
+    trailer_url = models.URLField('Ссылка на трейлер', blank=True, null=True)
+    age_rating = models.CharField('Возраст', max_length=10, blank=True, null=True)
+    actors = models.CharField('Актёры', max_length=500, blank=True, null=True)
+    director = models.CharField('Режиссёр', max_length=200, blank=True, null=True)
+    producer = models.CharField('Продюсер', max_length=200, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Фильм'
@@ -33,6 +38,11 @@ class Series(models.Model):
     is_active = models.BooleanField('Активно', default=True)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
     video_url = models.URLField('Ссылка на видео', blank=True, null=True)
+    trailer_url = models.URLField('Ссылка на трейлер', blank=True, null=True)
+    age_rating = models.CharField('Возраст', max_length=10, blank=True, null=True)
+    actors = models.CharField('Актёры', max_length=500, blank=True, null=True)
+    director = models.CharField('Режиссёр', max_length=200, blank=True, null=True)
+    producer = models.CharField('Продюсер', max_length=200, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Сериал'

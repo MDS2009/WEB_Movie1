@@ -19,23 +19,30 @@
                     <span><i class="fas fa-star"></i> {{ series.rating }}/10</span>
                     <span><i class="fas fa-eye"></i> {{ series.views }} просмотров</span>
                 </div>
-                <div class="series-description">
+
+                <div class="detail-description">
                     <h2>Описание</h2>
                     <p>{{ series.description }}</p>
                 </div>
-                <div class="actions">
+
+                {% if series.actors %}<p class="meta-line"><b>Актёры:</b> {{ series.actors }}</p>{% endif %}
+                {% if series.director %}<p class="meta-line"><b>Режиссёр:</b> {{ series.director }}</p>{% endif %}
+                {% if series.producer %}<p class="meta-line"><b>Продюсер:</b> {{ series.producer }}</p>{% endif %}
+
+                <div class="detail-actions">
                     <a href="{% url 'movies:series' %}" class="btn">← Назад к каталогу</a>
-                    {% if series.video_url %}
-                        <!-- Есть ссылка — обычный переход -->
-                        <a href="{{ series.video_url }}" class="btn" target="_blank" rel="noopener">
-                            Смотреть
-                        </a>
-                    {% else %}
-                        <!-- Нет ссылки — показываем модальное окно -->
-                        <button type="button" class="btn" id="watch-btn">
-                            Смотреть
-                        </button>
-                    {% endif %}
+
+                    <button class="btn js-open-player" type="button"
+                            data-title="{{ series.title }} — просмотр"
+                            data-src="{{ series.video_url|default:'' }}">
+                      Смотреть
+                    </button>
+
+                    <button class="btn js-open-player" type="button"
+                            data-title="{{ series.title }} — трейлер"
+                            data-src="{{ series.trailer_url|default:'' }}">
+                      Трейлер
+                    </button>
                 </div>
             </div>
         </div>

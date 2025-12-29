@@ -18,24 +18,32 @@
                     <span><i class="fas fa-clock"></i> {{ movie.duration }} мин</span>
                     <span><i class="fas fa-star"></i> {{ movie.rating }}/10</span>
                     <span><i class="fas fa-eye"></i> {{ movie.views }} просмотров</span>
+                    <span><i class="fa-solid fa-child"></i> {{movie.age_rating}} </span>
                 </div>
-                <div class="movie-description">
+
+                {% if movie.actors %}<p class="meta-line"><b>Актёры:</b> {{ movie.actors }}</p>{% endif %}
+                {% if movie.director %}<p class="meta-line"><b>Режиссёр:</b> {{ movie.director }}</p>{% endif %}
+                {% if movie.producer %}<p class="meta-line"><b>Продюсер:</b> {{ movie.producer }}</p>{% endif %}
+
+                <div class="detail-description">
                     <h2>Описание</h2>
                     <p>{{ movie.description }}</p>
                 </div>
-                <div class="actions">
+
+                <div class="detail-actions">
                     <a href="{% url 'movies:films' %}" class="btn">← Назад к каталогу</a>
-                    {% if movie.video_url %}
-                        <!-- Есть ссылка — обычный переход -->
-                        <a href="{{ movie.video_url }}" class="btn" target="_blank" rel="noopener">
-                            Смотреть
-                        </a>
-                    {% else %}
-                        <!-- Нет ссылки — показываем модальное окно -->
-                        <button type="button" class="btn" id="watch-btn">
-                            Смотреть
-                        </button>
-                    {% endif %}
+
+                    <button class="btn js-open-player" type="button"
+                            data-title="{{ movie.title }} — просмотр"
+                            data-src="{{ movie.video_url|default:'' }}">
+                      Смотреть
+                    </button>
+
+                    <button class="btn js-open-player" type="button"
+                            data-title="{{ movie.title }} — трейлер"
+                            data-src="{{ movie.trailer_url|default:'' }}">
+                      Трейлер
+                    </button>
                 </div>
             </div>
         </div>

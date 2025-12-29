@@ -1,33 +1,110 @@
 {% extends 'movies/base.html' %}
+{% load static %}
+
 {% block title %}Главная - RV КИНО{% endblock %}
+
 {% block content %}
-<section class="hero">
-    <div class="container">
-        <h1>Добро пожаловать в RV КИНО</h1>
-    </div>
-</section>
-<section class="movies-section">
-    <div class="container">
-        <h2>Новинки</h2>
-        <div class="movies-grid">
-            {% for movie in movies %}
-            <div class="movie-card">
-                {% if movie.poster %}
-                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
-                {% else %}
-                    <div class="no-poster"><i class="fas fa-film"></i></div>
-                {% endif %}
-                <div class="movie-info">
-                    <h3>{{ movie.title }}</h3>
-                    <p class="movie-year">{{ movie.year }}</p>
-                    <p class="movie-rating"><i class="fas fa-star"></i> {{ movie.rating }}</p>
-                    <a href="{% url 'movies:detail' movie.id %}" class="btn">Подробнее</a>
-                </div>
-            </div>
-            {% empty %}
-            <p>Фильмов пока нет.</p>
-            {% endfor %}
+
+<!-- HERO-СЛАЙДЕР (последние 3–5) -->
+<section class="hero-slider" id="hero-slider">
+  <div class="hero-track" id="hero-track">
+    {% for item in hero_items %}
+      <a class="hero-slide"
+         href="{% if item.kind == 'movie' %}{% url 'movies:detail' item.id %}{% else %}{% url 'movies:detail_series' item.id %}{% endif %}"
+         style="{% if item.poster %}background-image:url('{{ item.poster }}');{% else %}background:#1a1a1a;{% endif %}">
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content container">
+          <div class="hero-badges">
+            <span class="badge">★ {{ item.rating }}</span>
+            <span class="badge">{{ item.year }}</span>
+            <span class="badge">{% if item.kind == 'movie' %}Фильм{% else %}Сериал{% endif %}</span>
+          </div>
+
+          <h1 class="hero-title">{{ item.title }}</h1>
+          <div class="hero-actions"><span class="btn">Подробнее</span></div>
         </div>
-    </div>
+      </a>
+    {% empty %}
+      <div class="hero-slide" style="background:#1a1a1a;">
+        <div class="hero-overlay"></div>
+        <div class="hero-content container">
+          <h1 class="hero-title">Новинок пока нет</h1>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <button class="hero-nav prev" type="button" data-scroll="hero-track" data-dir="-1" aria-label="Назад">‹</button>
+  <button class="hero-nav next" type="button" data-scroll="hero-track" data-dir="1" aria-label="Вперёд">›</button>
 </section>
+
+<!-- ЛЕНТА: ФИЛЬМЫ -->
+<section class="rail">
+  <div class="container">
+    <div class="rail-head">
+      <h2>Фильмы</h2>
+      <div class="rail-nav">
+        <button type="button" class="rail-btn" data-scroll="movies-rail" data-dir="-1">‹</button>
+        <button type="button" class="rail-btn" data-scroll="movies-rail" data-dir="1">›</button>
+      </div>
+    </div>
+
+    <div class="rail-viewport" id="movies-rail">
+      {% for movie in movies %}
+        <a class="rail-card" href="{% url 'movies:detail' movie.id %}">
+          {% if movie.poster %}
+            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+          {% else %}
+            <div class="no-poster">🎬</div>
+          {% endif %}
+
+          <div class="rail-meta">
+            {% if movie.rating %}<span class="rail-pill">★ {{ movie.rating }}</span>{% endif %}
+          </div>
+
+          <div class="rail-title">{{ movie.title }}</div>
+        </a>
+      {% empty %}
+        <p>Фильмов пока нет.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ЛЕНТА: СЕРИАЛЫ -->
+<section class="rail">
+  <div class="container">
+    <div class="rail-head">
+      <h2>Сериалы</h2>
+      <div class="rail-nav">
+        <button type="button" class="rail-btn" data-scroll="series-rail" data-dir="-1">‹</button>
+        <button type="button" class="rail-btn" data-scroll="series-rail" data-dir="1">›</button>
+      </div>
+    </div>
+
+    <div class="rail-viewport" id="series-rail">
+      {% for s in series %}
+        <a class="rail-card" href="{% url 'movies:detail_series' s.id %}">
+          {% if s.poster %}
+            <img src="{{ s.poster.url }}" alt="{{ s.title }}">
+          {% else %}
+            <div class="no-poster">🎞</div>
+          {% endif %}
+
+          <div class="rail-meta">
+            {% if s.rating %}<span class="rail-pill">★ {{ s.rating }}</span>{% endif %}
+          </div>
+
+          <div class="rail-title">{{ s.title }}</div>
+        </a>
+      {% empty %}
+        <p>Сериалов пока нет.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
 {% endblock %}
