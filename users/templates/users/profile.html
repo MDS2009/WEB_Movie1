@@ -1,25 +1,43 @@
 {% extends 'movies/base.html' %}
 
-{% block title %}Профиль пользователя - RV КИНО{% endblock %}
+{% block title %}Аккаунт - RV КИНО{% endblock %}
 
 {% block content %}
 <div class="profile-wrapper">
-  <div class="profile-card">
-    <h1>Профиль пользователя</h1>
-
-    <p class="profile-welcome">Добро пожаловать, {{ user.username }}!</p>
-
-    <div class="profile-info">
-      <p><span>Имя пользователя:</span> {{ user.username }}</p>
-      <p><span>Email:</span> {{ user.email|default:"не указан" }}</p>
+  <div class="profile-card account-card">
+    <div class="account-avatar">
+      <div class="account-avatar-circle{% if user.profile.avatar %} has-avatar{% endif %}">
+        {% if user.profile.avatar %}
+          <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="account-avatar-img">
+        {% endif %}
+      </div>
     </div>
 
-    <hr class="profile-divider">
+    <div class="account-fields">
+      <input
+        class="account-input"
+        type="text"
+        value="{{ user.get_full_name|default:user.username }}"
+        placeholder="Имя Фамилия"
+        readonly
+      >
+      <input
+        class="account-input"
+        type="email"
+        value="{{ user.email }}"
+        placeholder="Почта"
+        readonly
+      >
+    </div>
 
-    <h2 class="profile-subtitle">Согласия</h2>
-    <form method="post" class="profile-consent-form">
+    <div class="account-actions">
+      <a class="account-btn" href="{% url 'users:profile_edit' %}">Редактировать</a>
+      <a class="account-btn" href="{% url 'users:favorites' %}">Избранные</a>
+    </div>
+
+    <form method="post" class="profile-consent-form account-consent">
       {% csrf_token %}
-      <label class="checkbox-row">
+      <label class="checkbox-row account-checkbox">
         <input type="checkbox" name="accepted_privacy"
                {% if accepted_privacy %}checked{% endif %}>
         <span>Я принимаю <span class="nbsp"> </span>
@@ -29,7 +47,7 @@
         </span>
       </label>
 
-      <label class="checkbox-row">
+      <label class="checkbox-row account-checkbox">
         <input type="checkbox" name="accepted_terms"
                {% if accepted_terms %}checked{% endif %}>
         <span>Я принимаю <span class="nbsp"> </span>

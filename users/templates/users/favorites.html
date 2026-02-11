@@ -1,0 +1,86 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}Избранные - RV КИНО{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Избранные</h1>
+  </div>
+</section>
+
+<section class="movies-section">
+  <div class="container">
+    <h2>Фильмы</h2>
+    <div class="movies-grid">
+      {% for item in favorite_movies %}
+        <div class="movie-card">
+          {% if item.movie.poster %}
+            <img src="{{ item.movie.poster.url }}" alt="{{ item.movie.title }}">
+          {% else %}
+            <div class="no-poster"><i class="fas fa-film"></i></div>
+          {% endif %}
+          <div class="movie-info">
+            <h3>{{ item.movie.title }}</h3>
+            <p class="movie-year">{{ item.movie.year }}</p>
+            <p class="movie-rating"><i class="fas fa-star"></i> {{ item.movie.rating }}</p>
+            <a href="{% url 'movies:detail' item.movie.id item.movie.slug %}" class="btn">Подробнее</a>
+          </div>
+        </div>
+      {% empty %}
+        <p>Избранных фильмов пока нет.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="movies-section">
+  <div class="container">
+    <h2>Сериалы</h2>
+    <div class="movies-grid">
+      {% for item in favorite_series %}
+        <div class="movie-card">
+          {% if item.series.poster %}
+            <img src="{{ item.series.poster.url }}" alt="{{ item.series.title }}">
+          {% else %}
+            <div class="no-poster"><i class="fas fa-film"></i></div>
+          {% endif %}
+          <div class="movie-info">
+            <h3>{{ item.series.title }}</h3>
+            <p class="movie-year">{{ item.series.year }}</p>
+            <p class="movie-rating"><i class="fas fa-star"></i> {{ item.series.rating }}</p>
+            <a href="{% url 'movies:detail_series' item.series.id item.series.slug %}" class="btn">Подробнее</a>
+          </div>
+        </div>
+      {% empty %}
+        <p>Избранных сериалов пока нет.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="movies-section">
+  <div class="container">
+    <h2>Шоу</h2>
+    <div class="movies-grid">
+      {% for item in favorite_shows %}
+        <div class="movie-card">
+          {% if item.show.poster %}
+            <img src="{{ item.show.poster.url }}" alt="{{ item.show.title }}">
+          {% else %}
+            <div class="no-poster"><i class="fas fa-film"></i></div>
+          {% endif %}
+          <div class="movie-info">
+            <h3>{{ item.show.title }}</h3>
+            <p class="movie-year">{{ item.show.year }}</p>
+            <p class="movie-rating"><i class="fas fa-star"></i> {{ item.show.rating }}</p>
+            <a href="{% url 'movies:detail_show' item.show.id item.show.slug %}" class="btn">Подробнее</a>
+          </div>
+        </div>
+      {% empty %}
+        <p>Избранных шоу пока нет.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

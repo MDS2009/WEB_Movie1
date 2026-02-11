@@ -28,9 +28,17 @@
                 {% if series.actors %}<p class="meta-line"><b>Актёры:</b> {{ series.actors }}</p>{% endif %}
                 {% if series.director %}<p class="meta-line"><b>Режиссёр:</b> {{ series.director }}</p>{% endif %}
                 {% if series.producer %}<p class="meta-line"><b>Продюсер:</b> {{ series.producer }}</p>{% endif %}
+                {% if series.genres.all|length %}
+                    <p class="meta-line"><b>Жанры:</b> {{ series.genres.all|join:", " }}</p>
+                {% endif %}
 
                 <div class="detail-actions">
                     <a href="{% url 'movies:series' %}" class="btn">← Назад к каталогу</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'movies:favorite_series' series.id %}" class="btn">
+                            {% if is_favorite %}Убрать из избранного{% else %}В избранное{% endif %}
+                        </a>
+                    {% endif %}
 
                     <button class="btn js-open-player" type="button"
                             data-title="{{ series.title }} — просмотр"
@@ -52,6 +60,37 @@
             <p>Этот сериал ещё не вышел на нашей площадке.</p>
             <button type="button" class="modal-btn" id="modal-close-btn">Понятно</button>
           </div>
+        </div>
+
+        <div class="reviews-block">
+            <h2>Отзывы</h2>
+            {% if user.is_authenticated %}
+                <form method="post" class="review-form">
+                    {% csrf_token %}
+                    {{ review_form.non_field_errors }}
+                    <label>Оценка (1-10)</label>
+                    {{ review_form.rating }}
+                    <label>Текст отзыва</label>
+                    {{ review_form.text }}
+                    <button type="submit" class="btn">Оставить отзыв</button>
+                </form>
+            {% else %}
+                <p>Чтобы оставить отзыв, войдите в аккаунт.</p>
+            {% endif %}
+
+            <div class="reviews-list">
+                {% for review in reviews %}
+                    <div class="review-item">
+                        <div class="review-meta">
+                            <strong>{{ review.user.username }}</strong>
+                            <span>★ {{ review.rating }}</span>
+                        </div>
+                        <p>{{ review.text }}</p>
+                    </div>
+                {% empty %}
+                    <p>Пока нет отзывов.</p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </section>

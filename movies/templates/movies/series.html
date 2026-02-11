@@ -8,6 +8,17 @@
 </section>
 <section class="movies-section">
     <div class="container">
+        <form class="catalog-filters" method="get">
+            <input type="text" name="q" placeholder="Поиск по названию или описанию" value="{{ query }}">
+            <select name="sort">
+                <option value="new" {% if sort == 'new' %}selected{% endif %}>Сначала новые</option>
+                <option value="rating" {% if sort == 'rating' %}selected{% endif %}>По рейтингу</option>
+                <option value="year" {% if sort == 'year' %}selected{% endif %}>По году</option>
+                <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>По популярности</option>
+                <option value="title" {% if sort == 'title' %}selected{% endif %}>По названию</option>
+            </select>
+            <button type="submit" class="btn">Применить</button>
+        </form>
         <div class="movies-grid">
             {% for series in series %}
             <div class="movie-card">
@@ -20,13 +31,25 @@
                     <h3>{{ series.title }}</h3>
                     <p class="movie-year">{{ series.year }}</p>
                     <p class="movie-rating"><i class="fas fa-star"></i> {{ series.rating }}</p>
-                    <a href="{% url 'movies:detail_series' series.id %}" class="btn">Подробнее</a>
+                    <a href="{% url 'movies:detail_series' series.id series.slug %}" class="btn">Подробнее</a>
                 </div>
             </div>
             {% empty %}
             <p>Сериалов пока нет.</p>
             {% endfor %}
         </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a class="btn" href="?q={{ query|urlencode }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}">← Назад</a>
+                {% endif %}
+                <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a class="btn" href="?q={{ query|urlencode }}&sort={{ sort }}&page={{ page_obj.next_page_number }}">Вперёд →</a>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
