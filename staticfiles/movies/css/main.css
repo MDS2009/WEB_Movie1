@@ -7,14 +7,14 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .navbar { background: #000; padding: 1rem 0; border-bottom: 2px solid #e50914; }
 .navbar .container {display: flex; align-items: center; justify-content: flex-start; }
 
-.navbar { background: #000; padding: 1rem 0; border-bottom: 2px solid #e50914; position: relative; }
+.navbar { background: #000; padding: 1rem 0; border-bottom: 2px solid #e50914; position: relative; z-index: 2000; }
 .navbar .container { display: flex; align-items: center; justify-content: space-between; }
 
 .logo { display: inline-flex; align-items: center; margin-right: 60px; }
 .logo-img { height: 50px; display: block; }
 
 
-.nav-menu { list-style: none; display: flex; gap: 2rem; margin: 0; padding: 0; }
+.nav-menu { list-style: none; display: flex; gap: 2rem; margin: 0; padding: 0; position: relative; z-index: 2001; }
 .nav-menu a { color: #fff; text-decoration: none; transition: color 0.3s; }
 .nav-menu a:hover { color: #e50914; }
 
@@ -39,13 +39,101 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .btn { display: inline-block; background: #e50914; color: #fff; padding: 0.7rem 1.5rem; text-decoration: none; border-radius: 5px; transition: background 0.3s;}
 .btn:hover { background: #b20710; }
 
+/* ===== СТИЛИ ДЛЯ КНОПОК УПРАВЛЕНИЯ СООБЩЕСТВАМИ ===== */
+.community-actions {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.community-actions .btn,
+.community-actions a.btn {
+  background: #e50914 !important;
+  color: #fff !important;
+  padding: 0.6rem 1.2rem !important;
+  border-radius: 6px !important;
+  text-decoration: none !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  border: none !important;
+}
+
+.community-actions .btn:hover,
+.community-actions a.btn:hover {
+  background: #b20710 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(229, 9, 20, 0.3) !important;
+}
+
+/* Мобильная адаптация для кнопок сообществ */
+@media (max-width: 768px) {
+  .community-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .community-actions .btn,
+  .community-actions a.btn {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 0.8rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .community-actions .btn-edit,
+  .community-actions a.btn-edit {
+    background: #e50914 !important;
+  }
+  
+  .community-actions .btn-manage,
+  .community-actions a.btn-manage {
+    background: #e50914 !important;
+  }
+  
+  .community-actions .btn-members,
+  .community-actions a.btn-members {
+    background: #e50914 !important;
+    color: #fff !important;
+  }
+  
+  .community-actions .btn-edit:hover,
+  .community-actions a.btn-edit:hover {
+    background: #b20710 !important;
+  }
+  
+  .community-actions .btn-manage:hover,
+  .community-actions a.btn-manage:hover {
+    background: #b20710 !important;
+  }
+  
+  .community-actions .btn-members:hover,
+  .community-actions a.btn-members:hover {
+    background: #b20710 !important;
+  }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 480px) {
+  .community-actions .btn,
+  .community-actions a.btn {
+    font-size: 0.8rem !important;
+    padding: 0.7rem 0.8rem !important;
+  }
+}
+
 .page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
 .page-header { background: #1a1a1a; padding: 2rem 0; border-bottom: 2px solid #e50914; }
 .page-header h1 { font-size: 2.5rem; }
 .movie-detail { padding: 3rem 0; }
 .detail-grid { display: grid; grid-template-columns: 300px 1fr; gap: 3rem;}
 .detail-poster, .no-poster-large { width: 100%; }
-.no-poster-large { height: 450px; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 6rem; color: #555; border-radius: 10px;}
+.no-poster-large { height: 450px; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #666; border-radius: 10px; font-weight: 300;}
 .footer { background: #000; padding: 2rem 0; text-align: center; border-top: 2px solid #e50914; }
 .footer p { color: #999; margin: 0.5rem 0; }
 
@@ -71,26 +159,30 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
     justify-content: center;
 }
 
-/* Белый блок по центру */
-.cookie-overlay .cookie-banner { background: #ffffff;
-    color: #333333;
-    max-width: 600px;
-    width: 90%;
-    padding: 1.5rem 2rem;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+/* Блок по центру (стиль сайта) */
+.cookie-overlay .cookie-banner {
+    background: #1a1a1a;
+    color: #ffffff;
+    max-width: 700px;
+    width: 92%;
+    padding: 1.6rem 2rem;
+    border-radius: 14px;
+    border: 1px solid #e50914;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
     font-size: 0.95rem;
 }
 
 /* Заголовок */
 .cookie-overlay .cookie-banner h3 {
-    margin: 0 0 0.75rem;
-    font-size: 1.1rem;
+    margin: 0 0 0.6rem;
+    font-size: 1.2rem;
 }
 
 /* Текст */
 .cookie-overlay .cookie-banner p {
-    margin: 0 0 1rem;
+    margin: 0 0 1.2rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.4;
 }
 
 /* Кнопки */
@@ -102,30 +194,31 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 }
 
 .cookie-btn {
-    border: none;
-    border-radius: 6px;
-    padding: 0.5rem 1.2rem;
+    border: 1px solid #e50914;
+    border-radius: 999px;
+    padding: 0.55rem 1.4rem;
     cursor: pointer;
     font: inherit;
 }
 
 .cookie-btn-primary {
-    background: #1a73e8;
+    background: #e50914;
     color: #fff;
 }
 
 .cookie-btn-primary:hover {
-    background: #155fc0;
+    background: #b20710;
 }
 
 .cookie-btn-secondary {
-    background: #f1f3f4;
-    color: #333;
+    background: transparent;
+    color: #e50914;
 }
 
 .cookie-btn-secondary:hover {
-    background: #e2e5e7;
+    background: rgba(229, 9, 20, 0.15);
 }
+
 
 /* ===== Модальное окно "фильм недоступен" ===== */
 
@@ -203,6 +296,7 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 @media (max-width: 786px) {
     .hero .menu-open .hero-subtitle {
         display: none;
+        z-index: 2001;
     }
 
     .nav-menu {
@@ -407,6 +501,117 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
     color: #bbb;
 }
 
+/* ===== Аккаунт (новый дизайн) ===== */
+.account-card {
+    background: #161616;
+    border: 1px solid #e50914;
+    border-radius: 16px;
+    padding: 2.5rem 2.5rem 2rem;
+    text-align: center;
+}
+
+.account-avatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.account-avatar-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 2px solid #e50914;
+    position: relative;
+    overflow: hidden;
+}
+
+.account-avatar-circle::after {
+    content: "";
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    background: #000;
+    box-shadow: inset 0 0 0 2px #222;
+}
+
+.account-avatar-circle.has-avatar::after {
+    display: none;
+}
+
+.account-avatar-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account-fields {
+    display: grid;
+    gap: 14px;
+    max-width: 320px;
+    margin: 0 auto 1.5rem;
+}
+
+.account-input {
+    background: #1a1a1a;
+    border: 1px solid #e50914;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 999px;
+    text-align: center;
+}
+
+.account-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.account-actions {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.account-btn {
+    background: transparent;
+    color: #e50914;
+    border: 1px solid #e50914;
+    padding: 8px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    font: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.account-btn:hover {
+    background: #e50914;
+    color: #fff;
+}
+
+.account-consent {
+    align-items: center;
+}
+
+.account-checkbox {
+    justify-content: center;
+    color: #e50914;
+}
+
+.account-checkbox input {
+    accent-color: #e50914;
+}
+
+@media (max-width: 600px) {
+    .account-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
 .legal-page {
     background: #1a1a1a;
     border: 1px solid #e50914;
@@ -567,7 +772,7 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 }
 
 /* ===== Верхний hero-слайдер ===== */
-.hero-slider { position: relative; height: 420px; overflow: hidden; border-bottom: 2px solid #e50914; }
+.hero-slider { position: relative; height: 420px; overflow: hidden; border-bottom: 2px solid #e50914; z-index: 1; }
 .hero-track { height: 100%; display: flex; overflow: hidden; scroll-behavior: smooth; }
 .hero-slide { min-width: 100%; height: 100%; background-size: cover; background-position: center; position: relative; display: block; }
 .hero-overlay { position:absolute; inset:0; background: linear-gradient(90deg, rgba(0,0,0,.85), rgba(0,0,0,.25)); }
@@ -636,6 +841,69 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
   scroll-snap-align: start;
 }
 
+/* ===== СТИЛИ ДЛЯ СООБЩЕСТВ (таблетки) ===== */
+.org-rail-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 120px;
+  height: 60px;
+  background: transparent;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.org-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: #fff;
+}
+
+.org-pill:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.org-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.org-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.org-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #999;
+}
+
+.org-name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: #fff;
+}
+
 /* верхняя плашка (как на скрине) */
 .rail-meta{
   position: absolute;
@@ -673,3 +941,327 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 
 /* чтобы старый рейтинг не мешал, если он у тебя ещё выводится */
 .card-rating{ display: none; }
+
+/* ===== Фильтры каталога ===== */
+.catalog-filters{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.catalog-filters input,
+.catalog-filters select{
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+/* ===== Пагинация ===== */
+.pagination{
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ===== Сообщения ===== */
+.messages{
+  margin: 12px 0;
+  display: grid;
+  gap: 8px;
+}
+
+.message{
+  background: #1a1a1a;
+  border-left: 3px solid #e50914;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+/* ===== Отзывы ===== */
+.reviews-block{
+  margin-top: 28px;
+}
+
+.review-form{
+  display: grid;
+  gap: 10px;
+  max-width: 520px;
+  margin-bottom: 18px;
+}
+
+.review-form textarea{
+  min-height: 120px;
+}
+
+.review-item{
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.review-meta{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.movie-meta span {
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.member-card {
+  text-align: center;
+  padding: 1rem;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.member-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto 0.5rem;
+  overflow: hidden;
+}
+
+.member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.member-name {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.project-type {
+  color: #999;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.community-actions {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.community-actions .btn,
+.community-actions a.btn {
+  background: #e50914 !important;
+  color: #fff !important;
+  padding: 0.6rem 1.2rem !important;
+  border-radius: 6px !important;
+  text-decoration: none !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  border: none !important;
+}
+
+.community-actions .btn:hover,
+.community-actions a.btn:hover {
+  background: #b20710 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(229, 9, 20, 0.3) !important;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  .community-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .community-actions .btn,
+  .community-actions a.btn {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 0.8rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .community-actions .btn-edit,
+  .community-actions a.btn-edit {
+    background: #e50914 !important;
+  }
+  
+  .community-actions .btn-manage,
+  .community-actions a.btn-manage {
+    background: #e50914 !important;
+  }
+  
+  .community-actions .btn-members,
+  .community-actions a.btn-members {
+    background: #e50914 !important;
+    color: #fff !important;
+  }
+  
+  .community-actions .btn-edit:hover,
+  .community-actions a.btn-edit:hover {
+    background: #b20710 !important;
+  }
+  
+  .community-actions .btn-manage:hover,
+  .community-actions a.btn-manage:hover {
+    background: #b20710 !important;
+  }
+  
+  .community-actions .btn-members:hover,
+  .community-actions a.btn-members:hover {
+    background: #b20710 !important;
+  }
+  
+  .members-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}
+
+.organization-header {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+
+.organization-avatar {
+  flex-shrink: 0;
+}
+
+.organization-avatar img,
+.organization-avatar .org-avatar-placeholder {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.organization-avatar .org-avatar-placeholder {
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #666;
+  border: 2px dashed #ddd;
+}
+
+.organization-info {
+  flex: 1;
+}
+
+.organization-info h1 {
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+.organization-info h3 {
+  color: #ff6b6b;
+  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Стили для статуса аккаунта */
+.account-status {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-item:last-child {
+  border-bottom: none;
+}
+
+.status-item.verified {
+  color: #28a745;
+}
+
+.status-item.not-verified {
+  color: #ffc107;
+}
+
+.status-link {
+  color: #e50914;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.status-link:hover {
+  background: rgba(229, 9, 20, 0.2);
+}
+
+.organization-info p {
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.organization-description,
+.organization-members,
+.organization-contact,
+.organization-phone,
+.organization-email {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .organization-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .organization-avatar img,
+  .organization-avatar .org-avatar-placeholder {
+    width: 150px;
+    height: 150px;
+  }
+}

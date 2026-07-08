@@ -16,6 +16,9 @@
         <label for="id_password">Пароль</label>
         {{ form.password }}
       </div>
+      <p class="auth-extra" style="margin-top: 8px;">
+        <a href="{% url 'users:password_reset_request' %}">Забыли пароль?</a>
+      </p>
       <button type="submit" class="btn auth-btn">Войти</button>
     </form>
 

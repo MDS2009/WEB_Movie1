@@ -1,0 +1,89 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+
+{% block title %}{{ organization.organization_name or organization.user.username }} - RV КИНО{% endblock %}
+
+{% block content %}
+<section class="movies-section">
+  <div class="container">
+    <div class="organization-header">
+      <div class="organization-avatar">
+        {% if organization.avatar %}
+          <img src="{{ organization.avatar.url }}" alt="{{ organization.organization_name or organization.user.username }}">
+        {% else %}
+          <div class="org-avatar-placeholder">фото</div>
+        {% endif %}
+      </div>
+      <div class="organization-info">
+        <h1>{{ organization.organization_name or organization.user.username }}</h1>
+        {% if organization.organization_description %}
+          <div class="organization-description">
+            <h3>Организация</h3>
+            <p>{{ organization.organization_description }}</p>
+          </div>
+        {% endif %}
+        
+        {% if organization.organization_members %}
+          <div class="organization-members">
+            <h3>Участники</h3>
+            <p>{{ organization.organization_members }}</p>
+          </div>
+        {% endif %}
+        
+        {% if organization.organization_contact %}
+          <div class="organization-contact">
+            <h3>Контакты</h3>
+            <p>{{ organization.organization_contact }}</p>
+          </div>
+        {% endif %}
+        
+        {% if organization.phone %}
+          <div class="organization-phone">
+            <h3>Телефон</h3>
+            <p>{{ organization.phone }}</p>
+          </div>
+        {% endif %}
+        
+        {% if organization.user.email %}
+          <div class="organization-email">
+            <h3>Email</h3>
+            <p>{{ organization.user.email }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if projects %}
+<section class="movies-section">
+  <div class="container">
+    <h2>Проекты организации</h2>
+    <div class="movies-grid">
+      {% for project in projects %}
+        <div class="movie-card">
+          {% if project.poster %}
+            <img src="{{ project.poster }}" alt="{{ project.title }}">
+          {% else %}
+            <div class="no-poster"><i class="fas fa-film"></i></div>
+          {% endif %}
+          <div class="movie-info">
+            <h3>{{ project.title }}</h3>
+            {% if project.year %}<p class="movie-year">{{ project.year }}</p>{% endif %}
+            {% if project.rating %}<p class="movie-rating"><i class="fas fa-star"></i> {{ project.rating }}</p>{% endif %}
+            {% if project.kind == 'movie' %}
+              <a href="{% url 'movies:detail' project.id project.slug %}" class="btn">Подробнее</a>
+            {% elif project.kind == 'series' %}
+              <a href="{% url 'movies:detail_series' project.id project.slug %}" class="btn">Подробнее</a>
+            {% elif project.kind == 'show' %}
+              <a href="{% url 'movies:detail_show' project.id project.slug %}" class="btn">Подробнее</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

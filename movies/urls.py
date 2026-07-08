@@ -5,6 +5,7 @@ app_name = 'movies'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('search/', views.search, name='search'),
     
     path('films/', views.movies_list, name='films'),
     path('films/<int:movie_id>/watch/', views.movie_watch, name='movie_watch'),
@@ -28,4 +29,5 @@ urlpatterns = [
     path('shows/<int:show_id>/<slug:slug>/', views.show_detail, name='detail_show'),
 
     path('about/', views.about, name='about'),
+    path('communities/<int:community_id>/', views.community_detail, name='community_detail'),
 ]

@@ -40,66 +40,41 @@
   <button class="hero-nav next" type="button" data-scroll="hero-track" data-dir="1" aria-label="Вперёд">›</button>
 </section>
 
-<!-- ПОИСК И ФИЛЬТРЫ -->
-<section class="movies-section">
+{% if communities %}
+<section class="rail">
   <div class="container">
-    <form class="catalog-filters" method="get">
-      <input type="text" name="q" placeholder="Поиск по названию или описанию" value="{{ query }}">
-      <select name="kind">
-        <option value="all" {% if kind == 'all' %}selected{% endif %}>Все</option>
-        <option value="movies" {% if kind == 'movies' %}selected{% endif %}>Фильмы</option>
-        <option value="series" {% if kind == 'series' %}selected{% endif %}>Сериалы</option>
-        <option value="shows" {% if kind == 'shows' %}selected{% endif %}>Шоу</option>
-      </select>
-      <select name="genre">
-        <option value="">Все жанры</option>
-        {% for g in genres %}
-          <option value="{{ g.slug }}" {% if genre == g.slug %}selected{% endif %}>{{ g.name }}</option>
-        {% endfor %}
-      </select>
-      <select name="sort">
-        <option value="new" {% if sort == 'new' %}selected{% endif %}>Сначала новые</option>
-        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>По рейтингу</option>
-        <option value="year" {% if sort == 'year' %}selected{% endif %}>По году</option>
-        <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>По популярности</option>
-        <option value="title" {% if sort == 'title' %}selected{% endif %}>По названию</option>
-      </select>
-      <button type="submit" class="btn">Найти</button>
-    </form>
-  </div>
-</section>
-
-{% if search_active %}
-  <section class="movies-section">
-    <div class="container">
-      <div class="movies-grid">
-        {% for item in search_results %}
-          <div class="movie-card">
-            {% if item.poster %}
-              <img src="{{ item.poster }}" alt="{{ item.title }}">
-            {% else %}
-              <div class="no-poster"><i class="fas fa-film"></i></div>
-            {% endif %}
-            <div class="movie-info">
-              <h3>{{ item.title }}</h3>
-              {% if item.year %}<p class="movie-year">{{ item.year }}</p>{% endif %}
-              {% if item.rating %}<p class="movie-rating"><i class="fas fa-star"></i> {{ item.rating }}</p>{% endif %}
-              {% if item.kind == 'movie' %}
-                <a href="{% url 'movies:detail' item.id item.slug %}" class="btn">Подробнее</a>
-              {% elif item.kind == 'series' %}
-                <a href="{% url 'movies:detail_series' item.id item.slug %}" class="btn">Подробнее</a>
-              {% else %}
-                <a href="{% url 'movies:detail_show' item.id item.slug %}" class="btn">Подробнее</a>
-              {% endif %}
-            </div>
-          </div>
-        {% empty %}
-          <p>Ничего не найдено.</p>
-        {% endfor %}
+    <div class="rail-head">
+      <h2>Организации</h2>
+      <div class="rail-nav">
+        <button type="button" class="rail-btn" data-scroll="communities-rail" data-dir="-1">‹</button>
+        <button type="button" class="rail-btn" data-scroll="communities-rail" data-dir="1">›</button>
       </div>
     </div>
-  </section>
-{% else %}
+
+    <div class="rail-viewport" id="communities-rail">
+      {% for community in communities %}
+        <div class="rail-card org-rail-card">
+          <a href="{% url 'movies:community_detail' community.id %}" style="text-decoration: none; color: inherit;">
+            <div class="org-pill">
+              <div class="org-avatar">
+                {% if community.avatar %}
+                  <img src="{{ community.avatar.url }}" alt="{{ community.name }}">
+                {% else %}
+                  <div class="org-avatar-placeholder">фото</div>
+                {% endif %}
+              </div>
+              <div class="org-name">
+                {{ community.name }}
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <!-- ЛЕНТА: ФИЛЬМЫ -->
 <section class="rail">
   <div class="container">
@@ -132,8 +107,6 @@
     </div>
   </div>
 </section>
-
-
 <!-- ЛЕНТА: СЕРИАЛЫ -->
 <section class="rail">
   <div class="container">
@@ -166,7 +139,6 @@
     </div>
   </div>
 </section>
-{% endif %}
 
 
 {% endblock %}

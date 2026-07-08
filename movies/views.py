@@ -3,6 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, Prefetch, F
 from django.shortcuts import render, get_object_or_404, redirect
+
+from users.models import UserProfile
+from users.models import Community
+
 from .forms import ReviewForm
 from .models import (
     Movie,
@@ -16,6 +20,7 @@ from .models import (
     MovieReview,
     SeriesReview,
     ShowReview,
+    CommunityProject,
 )
 
 CATALOG_SORTS = {
@@ -59,11 +64,6 @@ def _build_item(obj, kind):
     }
 
 def index(request):
-    query = request.GET.get('q', '').strip()
-    kind = request.GET.get('kind', 'all')
-    genre_slug = request.GET.get('genre', '').strip()
-    sort_key = request.GET.get('sort', 'new')
-
     movies = (
         Movie.objects.filter(is_active=True)
         .only('id', 'title', 'poster', 'rating', 'year', 'slug')
@@ -120,58 +120,102 @@ def index(request):
 
         hero_items = sorted(mixed, key=lambda x: x["year"], reverse=True)[:5]
 
-    genres = Genre.objects.all()
-    search_results = []
-    search_active = bool(query or genre_slug or kind != 'all' or sort_key != 'new')
-    if search_active:
-        movies_qs = Movie.objects.filter(is_active=True)
-        series_qs = Series.objects.filter(is_active=True)
-        shows_qs = Show.objects.filter(is_active=True)
-
-        if query:
-            movies_qs = _apply_query_filter(movies_qs, query)
-            series_qs = _apply_query_filter(series_qs, query)
-            shows_qs = _apply_query_filter(shows_qs, query)
-        if genre_slug:
-            movies_qs = movies_qs.filter(genres__slug=genre_slug)
-            series_qs = series_qs.filter(genres__slug=genre_slug)
-            shows_qs = shows_qs.filter(genres__slug=genre_slug)
-
-        movies_qs = movies_qs.distinct()
-        series_qs = series_qs.distinct()
-        shows_qs = shows_qs.distinct()
-
-        order_by = CATALOG_SORTS.get(sort_key, CATALOG_SORTS['new'])
-        if kind == 'movies':
-            search_results = [_build_item(obj, 'movie') for obj in movies_qs.order_by(order_by)[:24]]
-        elif kind == 'series':
-            search_results = [_build_item(obj, 'series') for obj in series_qs.order_by(order_by)[:24]]
-        elif kind == 'shows':
-            search_results = [_build_item(obj, 'show') for obj in shows_qs.order_by(order_by)[:24]]
-        else:
-            combined = [
-                _build_item(obj, 'movie') for obj in movies_qs.order_by(order_by)[:12]
-            ] + [
-                _build_item(obj, 'series') for obj in series_qs.order_by(order_by)[:12]
-            ] + [
-                _build_item(obj, 'show') for obj in shows_qs.order_by(order_by)[:12]
-            ]
-
-            reverse = order_by.startswith('-')
-            key_map = {
-                'title': lambda x: (x['title'] or '').lower(),
-                'rating': lambda x: x['rating'] or 0,
-                'year': lambda x: x['year'] or 0,
-                'popularity': lambda x: x['views'] or 0,
-                'new': lambda x: x['created_at'],
-            }
-            key_fn = key_map.get(sort_key, key_map['new'])
-            search_results = sorted(combined, key=key_fn, reverse=reverse)[:24]
+    communities = (
+        Community.objects.filter(is_active=True)
+        .select_related('created_by')
+        .only('avatar', 'name', 'slug', 'created_by__id', 'created_by__username')
+        .order_by('name')[:24]
+    )
 
     context = {
         "movies": movies,
         "series": series,
         "hero_items": hero_items,
+        "communities": communities,
+        "page_title": "RV КИНО - Главная",
+    }
+    return render(request, "movies/index.html", context)
+
+
+def search(request):
+    query = request.GET.get('q', '').strip()
+    kind = request.GET.get('kind', 'all')
+    genre_slug = request.GET.get('genre', '').strip()
+    sort_key = request.GET.get('sort', 'new')
+
+    genres = Genre.objects.all()
+    search_results = []
+    search_active = bool(query or genre_slug or kind != 'all' or sort_key != 'new')
+
+    if search_active:
+        if kind == 'communities':
+            communities_qs = Community.objects.filter(is_active=True).select_related('created_by')
+            if query:
+                communities_qs = communities_qs.filter(
+                    Q(name__icontains=query)
+                    | Q(description__icontains=query)
+                    | Q(created_by__username__icontains=query)
+                )
+            search_results = [
+                {
+                    'kind': 'community',
+                    'id': community.id,
+                    'slug': community.slug,
+                    'title': community.name,
+                    'poster': community.avatar.url if community.avatar else '',
+                    'rating': None,
+                    'year': None,
+                    'views': None,
+                    'created_at': community.created_at,
+                }
+                for community in communities_qs.order_by('name')[:24]
+            ]
+        else:
+            movies_qs = Movie.objects.filter(is_active=True)
+            series_qs = Series.objects.filter(is_active=True)
+            shows_qs = Show.objects.filter(is_active=True)
+
+            if query:
+                movies_qs = _apply_query_filter(movies_qs, query)
+                series_qs = _apply_query_filter(series_qs, query)
+                shows_qs = _apply_query_filter(shows_qs, query)
+            if genre_slug:
+                movies_qs = movies_qs.filter(genres__slug=genre_slug)
+                series_qs = series_qs.filter(genres__slug=genre_slug)
+                shows_qs = shows_qs.filter(genres__slug=genre_slug)
+
+            movies_qs = movies_qs.distinct()
+            series_qs = series_qs.distinct()
+            shows_qs = shows_qs.distinct()
+
+            order_by = CATALOG_SORTS.get(sort_key, CATALOG_SORTS['new'])
+            if kind == 'movies':
+                search_results = [_build_item(obj, 'movie') for obj in movies_qs.order_by(order_by)[:24]]
+            elif kind == 'series':
+                search_results = [_build_item(obj, 'series') for obj in series_qs.order_by(order_by)[:24]]
+            elif kind == 'shows':
+                search_results = [_build_item(obj, 'show') for obj in shows_qs.order_by(order_by)[:24]]
+            else:
+                combined = [
+                    _build_item(obj, 'movie') for obj in movies_qs.order_by(order_by)[:12]
+                ] + [
+                    _build_item(obj, 'series') for obj in series_qs.order_by(order_by)[:12]
+                ] + [
+                    _build_item(obj, 'show') for obj in shows_qs.order_by(order_by)[:12]
+                ]
+
+                reverse = order_by.startswith('-')
+                key_map = {
+                    'title': lambda x: (x['title'] or '').lower(),
+                    'rating': lambda x: x['rating'] or 0,
+                    'year': lambda x: x['year'] or 0,
+                    'popularity': lambda x: x['views'] or 0,
+                    'new': lambda x: x['created_at'],
+                }
+                key_fn = key_map.get(sort_key, key_map['new'])
+                search_results = sorted(combined, key=key_fn, reverse=reverse)[:24]
+
+    context = {
         "genres": genres,
         "search_results": search_results,
         "search_active": search_active,
@@ -179,9 +223,9 @@ def index(request):
         "kind": kind,
         "genre": genre_slug,
         "sort": sort_key,
-        "page_title": "RV КИНО - Главная",
+        "page_title": "Поиск",
     }
-    return render(request, "movies/index.html", context)
+    return render(request, "movies/search.html", context)
 
 
 # Фильмы
@@ -482,3 +526,63 @@ def about(request):
         'page_title': 'О компании RV КИНО'
     }
     return render(request, 'movies/about.html', context)
+
+
+def community_detail(request, community_id):
+    """Детальная страница сообщества"""
+    community = get_object_or_404(
+        Community.objects.select_related('created_by')
+        .only('id', 'name', 'slug', 'description', 'members', 'contact_info', 'avatar', 'created_at', 'created_by__id', 'created_by__username')
+        .prefetch_related('members_users'),
+        id=community_id,
+        is_active=True
+    )
+    
+    # Получаем проекты сообщества через связующую модель
+    community_projects = CommunityProject.objects.filter(community=community).select_related(
+        'movie', 'series', 'show'
+    )
+    
+    # Формируем список проектов
+    projects = []
+    for comm_project in community_projects:
+        if comm_project.movie:
+            projects.append({
+                'kind': 'movie',
+                'id': comm_project.movie.id,
+                'slug': comm_project.movie.slug,
+                'title': comm_project.movie.title,
+                'poster': comm_project.movie.poster.url if comm_project.movie.poster else '',
+                'rating': comm_project.movie.rating,
+                'year': comm_project.movie.year,
+                'views': comm_project.movie.views,
+            })
+        elif comm_project.series:
+            projects.append({
+                'kind': 'series',
+                'id': comm_project.series.id,
+                'slug': comm_project.series.slug,
+                'title': comm_project.series.title,
+                'poster': comm_project.series.poster.url if comm_project.series.poster else '',
+                'rating': comm_project.series.rating,
+                'year': comm_project.series.year,
+                'views': comm_project.series.views,
+            })
+        elif comm_project.show:
+            projects.append({
+                'kind': 'show',
+                'id': comm_project.show.id,
+                'slug': comm_project.show.slug,
+                'title': comm_project.show.title,
+                'poster': comm_project.show.poster.url if comm_project.show.poster else '',
+                'rating': comm_project.show.rating,
+                'year': comm_project.show.year,
+                'views': comm_project.show.views,
+            })
+    
+    context = {
+        'community': community,
+        'projects': projects,
+        'page_title': community.name,
+    }
+    return render(request, 'movies/community_detail.html', context)

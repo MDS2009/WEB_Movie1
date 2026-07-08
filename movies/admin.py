@@ -1,17 +1,5 @@
 from django.contrib import admin
-from .models import (
-    Movie,
-    Series,
-    Show,
-    Genre,
-    HeroSlide,
-    FavoriteMovie,
-    FavoriteSeries,
-    FavoriteShow,
-    MovieReview,
-    SeriesReview,
-    ShowReview,
-)
+from .models import Movie, Series, Show, Genre, HeroSlide, FavoriteMovie, FavoriteSeries, FavoriteShow, MovieReview, SeriesReview, ShowReview, CommunityProject
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
@@ -30,7 +18,6 @@ class MovieAdmin(admin.ModelAdmin):
     # Порядок полей в форме редактирования
     fields = [
         'title',
-        'slug',
         'description',
         'age_rating',
         'actors',
@@ -65,7 +52,6 @@ class SeriesAdmin(admin.ModelAdmin):
     # Порядок полей в форме редактирования
     fields = [
         'title',
-        'slug',
         'description',
         'age_rating',
         'actors',
@@ -82,7 +68,6 @@ class SeriesAdmin(admin.ModelAdmin):
         'trailer_url',
         'genres',
     ]
-
 
 @admin.register(Show)
 class ShowAdmin(admin.ModelAdmin):
@@ -164,3 +149,19 @@ class ShowReviewAdmin(admin.ModelAdmin):
     list_display = ['show', 'user', 'rating', 'is_active', 'created_at']
     list_filter = ['is_active', 'created_at']
     search_fields = ['show__title', 'user__username', 'text']
+
+@admin.register(CommunityProject)
+class CommunityProjectAdmin(admin.ModelAdmin):
+    list_display = ['community', 'get_project', 'created_at']
+    list_filter = ['community', 'created_at']
+    search_fields = ['community__name', 'community__created_by__username']
+    
+    def get_project(self, obj):
+        if obj.movie:
+            return f"Фильм: {obj.movie.title}"
+        elif obj.series:
+            return f"Сериал: {obj.series.title}"
+        elif obj.show:
+            return f"Шоу: {obj.show.title}"
+        return "Нет проекта"
+    get_project.short_description = 'Проект'

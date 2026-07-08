@@ -5,10 +5,12 @@
 {% block content %}
 <div class="auth-wrapper">
   <div class="auth-card">
-    <h1>Регистрация нового пользователя</h1>
+    <h1>Регистрация</h1>
+
     <form method="post">
       {% csrf_token %}
-      {% for field in form %}
+
+      {% for field in user_form %}
         <div class="form-group">
           <label for="{{ field.id_for_label }}">{{ field.label }}</label>
           {{ field }}
@@ -20,6 +22,7 @@
           {% endfor %}
         </div>
       {% endfor %}
+
       <button type="submit" class="btn auth-btn">Зарегистрироваться</button>
     </form>
 

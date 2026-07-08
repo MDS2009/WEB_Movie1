@@ -1,0 +1,25 @@
+{% extends "movies/base.html" %}
+
+{% block title %}Неверный код подтверждения - RV КИНО{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3 class="text-danger">❌ Неверный или просроченный код</h3>
+                </div>
+                <div class="card-body text-center">
+                    <p>Код подтверждения неверный или просрочен.</p>
+                    <p>Пожалуйста, запросите новый код подтверждения.</p>
+                    <div class="mt-3">
+                        <a href="{% url 'users:resend_verification' %}" class="btn btn-primary me-2">Отправить новый код</a>
+                        <a href="{% url 'users:profile' %}" class="btn btn-secondary">Вернуться в профиль</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

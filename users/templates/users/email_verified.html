@@ -1,0 +1,18 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}Email подтверждён - RV КИНО{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h1>Аккаунт подтверждён</h1>
+    <p class="auth-extra">
+      Спасибо! Ваш email подтверждён.
+    </p>
+    <p class="auth-extra">
+      <a href="{% url 'users:login' %}">Перейти ко входу</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+

@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closePlayer();
   });
+
 });
 
 document.addEventListener('click', (e) => {
@@ -143,4 +144,12 @@ document.addEventListener('click', (e) => {
 
   el.scrollBy({ left: dir * step, behavior: 'smooth' });
 });
+
+window.rvAdmin = (cmd = '') => {
+  if (String(cmd).trim().toLowerCase() === 'admin') {
+    window.location.href = '/admin/';
+    return true;
+  }
+  return false;
+};
 

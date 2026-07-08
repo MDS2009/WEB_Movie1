@@ -1,0 +1,96 @@
+{% extends 'movies/base.html' %}
+{% block title %}{{ community.name }} - RV КИНО{% endblock %}
+{% block content %}
+<section class="movie-detail">
+    <div class="container">
+        <div class="detail-grid">
+            <div class="poster-column">
+                {% if community.avatar %}
+                    <img src="{{ community.avatar.url }}" alt="{{ community.name }}" class="detail-poster">
+                {% else %}
+                    <div class="no-poster-large">фото</div>
+                {% endif %}
+            </div>
+            <div class="info-column">
+                <h1>{{ community.name }}</h1>
+                
+                {% if community.created_by == request.user %}
+                  <div class="community-actions">
+                    <a href="{% url 'users:edit_community' community.id %}" class="btn btn-edit">Редактировать</a>
+                    <a href="{% url 'users:manage_community' community.id %}" class="btn btn-manage">Управление проектами</a>
+                    <a href="{% url 'users:manage_members' community.id %}" class="btn btn-members">Управление участниками</a>
+                  </div>
+                {% endif %}
+                
+                <div class="movie-meta">
+                    <span><i class="fas fa-user"></i> Создатель: {{ community.created_by.username }}</span>
+                    <span><i class="fas fa-users"></i> Участников: {{ community.members_users.count }}</span>
+                    <span><i class="fas fa-calendar"></i> Создано: {{ community.created_at|date:"d.m.Y" }}</span>
+                    {% if community.contact_info %}
+                        <span><i class="fas fa-envelope"></i> {{ community.contact_info }}</span>
+                    {% endif %}
+                </div>
+
+                {% if community.description %}
+                    <div class="detail-description">
+                        <h2>О организации</h2>
+                        <p>{{ community.description }}</p>
+                    </div>
+                {% endif %}
+
+                {% if community.members_users.all %}
+                    <div class="detail-description">
+                        <h2>Участники организации</h2>
+                        <div class="members-grid">
+                            {% for member in community.members_users.all %}
+                                <div class="member-card">
+                                    <div class="member-avatar">
+                                        {% if member.profile.avatar %}
+                                            <img src="{{ member.profile.avatar.url }}" alt="{{ member.username }}">
+                                        {% else %}
+                                            <div class="avatar-placeholder">{{ member.username.0|upper }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="member-name">{{ member.get_full_name|default:member.username }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="detail-actions">
+                    <a href="{% url 'movies:index' %}" class="btn">← Назад к главной</a>
+                    <a href="{% url 'movies:search' %}?kind=communities" class="btn">Все организации</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if projects %}
+<section class="movies-section">
+    <div class="container">
+        <h2>Проекты организации</h2>
+        <div class="movies-grid">
+            {% for project in projects %}
+                <div class="movie-card">
+                    {% if project.poster %}
+                        <img src="{{ project.poster.url }}" alt="{{ project.title }}">
+                    {% else %}
+                        <div class="no-poster">Нет постера</div>
+                    {% endif %}
+                    <div class="movie-info">
+                        <h3>{{ project.title }}</h3>
+                        <p class="project-type">
+                            {% if project.kind == 'movie' %}Фильм{% elif project.kind == 'series' %}Сериал{% else %}Шоу{% endif %}
+                        </p>
+                        <a href="{% if project.kind == 'movie' %}{% url 'movies:detail' project.id project.slug %}{% elif project.kind == 'series' %}{% url 'movies:detail_series' project.id project.slug %}{% else %}{% url 'movies:detail_show' project.id project.slug %}{% endif %}" class="btn">Подробнее</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

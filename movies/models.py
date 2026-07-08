@@ -12,6 +12,34 @@ def _generate_unique_slug(model, base_slug):
     return slug
 
 
+class CommunityProject(models.Model):
+    """Связь между сообществом и проектами"""
+    community = models.ForeignKey('users.Community', on_delete=models.CASCADE)
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE, blank=True, null=True)
+    series = models.ForeignKey('Series', on_delete=models.CASCADE, blank=True, null=True)
+    show = models.ForeignKey('Show', on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField('Добавлено', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Проект сообщества'
+        verbose_name_plural = 'Проекты сообществ'
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(movie__isnull=False) | models.Q(series__isnull=False) | models.Q(show__isnull=False),
+                name='at_least_one_project'
+            )
+        ]
+
+    def __str__(self):
+        if self.movie:
+            return f"{self.community} → {self.movie}"
+        elif self.series:
+            return f"{self.community} → {self.series}"
+        elif self.show:
+            return f"{self.community} → {self.show}"
+        return f"{self.community} → Неизвестный проект"
+
+
 class Genre(models.Model):
     name = models.CharField('Жанр', max_length=100, unique=True)
     slug = models.SlugField('Слаг', max_length=120, unique=True, blank=True)

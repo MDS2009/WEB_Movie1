@@ -1,0 +1,88 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+
+{% block title %}Поиск - RV КИНО{% endblock %}
+
+{% block content %}
+<section class="movies-section">
+  <div class="container">
+    <h1 style="margin-bottom: 1rem;">Поиск фильмов, сериалов, шоу и сообществ</h1>
+    <form class="catalog-filters" method="get">
+      <input type="text" name="q" placeholder="Поиск по названию или описанию" value="{{ query }}">
+      <select name="kind">
+        <option value="all" {% if kind == 'all' %}selected{% endif %}>Все</option>
+        <option value="movies" {% if kind == 'movies' %}selected{% endif %}>Фильмы</option>
+        <option value="series" {% if kind == 'series' %}selected{% endif %}>Сериалы</option>
+        <option value="shows" {% if kind == 'shows' %}selected{% endif %}>Шоу</option>
+        <option value="communities" {% if kind == 'communities' %}selected{% endif %}>Сообщества</option>
+      </select>
+      <select name="genre">
+        <option value="">Все жанры</option>
+        {% for g in genres %}
+          <option value="{{ g.slug }}" {% if genre == g.slug %}selected{% endif %}>{{ g.name }}</option>
+        {% endfor %}
+      </select>
+      <select name="sort">
+        <option value="new" {% if sort == 'new' %}selected{% endif %}>Сначала новые</option>
+        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>По рейтингу</option>
+        <option value="year" {% if sort == 'year' %}selected{% endif %}>По году</option>
+        <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>По популярности</option>
+        <option value="title" {% if sort == 'title' %}selected{% endif %}>По названию</option>
+      </select>
+      <button type="submit" class="btn">Найти</button>
+    </form>
+  </div>
+</section>
+
+<section class="movies-section">
+  <div class="container">
+    {% if search_active %}
+      <div class="movies-grid">
+        {% for item in search_results %}
+          {% if item.kind == 'community' %}
+            <div class="movie-card">
+              <div class="org-pill" style="margin: 16px auto;">
+                <div class="org-avatar">
+                  {% if item.poster %}
+                    <img src="{{ item.poster }}" alt="{{ item.title }}">
+                  {% else %}
+                    <div class="org-avatar-placeholder">фото</div>
+                  {% endif %}
+                </div>
+                <div class="org-name">{{ item.title }}</div>
+                <a href="{% url 'movies:community_detail' item.id %}" class="btn" style="margin-top: 10px;">Подробнее</a>
+              </div>
+            </div>
+          {% else %}
+            <div class="movie-card">
+              {% if item.poster %}
+                <img src="{{ item.poster }}" alt="{{ item.title }}">
+              {% else %}
+                <div class="no-poster"><i class="fas fa-film"></i></div>
+              {% endif %}
+              <div class="movie-info">
+                <h3>{{ item.title }}</h3>
+                {% if item.year %}<p class="movie-year">{{ item.year }}</p>{% endif %}
+                {% if item.rating %}<p class="movie-rating"><i class="fas fa-star"></i> {{ item.rating }}</p>{% endif %}
+                {% if item.kind == 'movie' %}
+                  <a href="{% url 'movies:detail' item.id item.slug %}" class="btn">Подробнее</a>
+                {% elif item.kind == 'series' %}
+                  <a href="{% url 'movies:detail_series' item.id item.slug %}" class="btn">Подробнее</a>
+                {% elif item.kind == 'show' %}
+                  <a href="{% url 'movies:detail_show' item.id item.slug %}" class="btn">Подробнее</a>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        {% empty %}
+          <p>Ничего не найдено.</p>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Введите запрос или выберите фильтры, чтобы начать поиск.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}
+

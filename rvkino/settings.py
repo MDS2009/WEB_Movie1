@@ -51,6 +51,8 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,6 +62,18 @@ INSTALLED_APPS = [
     'movies',
     'users',
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'users.auth_backends.PhoneOrUsernameBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+JAZZMIN_SETTINGS = {
+    "site_title": "RV КИНО админка",
+    "site_header": "RV КИНО",
+    "site_brand": "RV КИНО",
+    "welcome_sign": "Добро пожаловать в админ-панель RV КИНО",
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -76,7 +90,7 @@ ROOT_URLCONF = 'rvkino.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,7 +145,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -144,6 +157,41 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Email (SMTP). If SMTP isn't configured in DEBUG, emails go to console.
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='')
+EMAIL_HOST = config('EMAIL_HOST', default='')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='rvkinopro@gmail.com')
+
+if not EMAIL_BACKEND:
+    if DEBUG and not EMAIL_HOST:
+        EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    else:
+        EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Telegram Bot для верификации
+TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
+TELEGRAM_BOT_USERNAME = config('TELEGRAM_BOT_USERNAME', default='@rvkino_bot')
+
+# Перенаправление после logout
+LOGOUT_REDIRECT_URL = '/movies/'
+
+# CSRF настройки для разработки
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS = [
+        "http://127.0.0.1:8000",
+        "http://localhost:8000", 
+        "http://127.0.0.1:52829",
+        "http://localhost:52829"
+    ]
+    # Альтернативно, можно отключить CSRF для разработки
+    # CSRF_COOKIE_SECURE = False
+    # CSRF_COOKIE_HTTPONLY = False
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True

@@ -30,9 +30,25 @@
       >
     </div>
 
+    <div class="account-status">
+      {% if user.profile.telegram_chat_id %}
+        <div class="status-item verified">
+          ✅ Telegram подключен
+        </div>
+      {% else %}
+        <div class="status-item not-verified">
+          📱 Telegram не подключен
+          <a href="{% url 'users:telegram_connect' %}" class="status-link">Подключить Telegram</a>
+        </div>
+      {% endif %}
+    </div>
+
     <div class="account-actions">
       <a class="account-btn" href="{% url 'users:profile_edit' %}">Редактировать</a>
       <a class="account-btn" href="{% url 'users:favorites' %}">Избранные</a>
+      {% if user.profile.can_create_community %}
+        <a class="account-btn" href="{% url 'users:create_community' %}">Создать сообщество</a>
+      {% endif %}
     </div>
 
     <form method="post" class="profile-consent-form account-consent">
@@ -41,7 +57,7 @@
         <input type="checkbox" name="accepted_privacy"
                {% if accepted_privacy %}checked{% endif %}>
         <span>Я принимаю <span class="nbsp"> </span>
-          <a href="{% url 'users:privacy' %}" target="_blank" class="legal-link">
+          <a href="{% url 'users:privacy' %}" class="legal-link">
             политику конфиденциальности
           </a>
         </span>
@@ -51,8 +67,18 @@
         <input type="checkbox" name="accepted_terms"
                {% if accepted_terms %}checked{% endif %}>
         <span>Я принимаю <span class="nbsp"> </span>
-          <a href="{% url 'users:terms' %}" target="_blank" class="legal-link">
+          <a href="{% url 'users:terms' %}" class="legal-link">
             пользовательское соглашение
+          </a>
+        </span>
+      </label>
+
+      <label class="checkbox-row account-checkbox">
+        <input type="checkbox" name="accepted_data_processing"
+               {% if accepted_data_processing %}checked{% endif %}>
+        <span>Я даю <span class="nbsp"> </span>
+          <a href="{% url 'users:data_processing_consent' %}" class="legal-link">
+            согласие на обработку персональных данных
           </a>
         </span>
       </label>
