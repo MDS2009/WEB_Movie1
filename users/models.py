@@ -4,21 +4,22 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-import secrets
 from datetime import timedelta
 
 
 def _default_token() -> str:
+    # Used only as a historical default in old migrations (users.0009-0011).
     import random
     return ''.join(str(random.randint(0, 9)) for _ in range(6))
 
 
 def _default_expires_at():
+    # Used only as a historical default in old migrations (users.0009-0011).
     return timezone.now() + timedelta(minutes=15)
 
 
 def _default_verification_code():
-    """Генерирует алфавитно-цифровой код для верификации"""
+    # Used only as a historical default in old migrations (users.0011).
     import random
     import string
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -33,8 +34,6 @@ class UserProfile(models.Model):
     accepted_terms = models.BooleanField(default=False)
     accepted_data_processing = models.BooleanField('Согласие на обработку персональных данных', default=False)
     accepted_at = models.DateTimeField(blank=True, null=True)
-    phone_verified_at = models.DateTimeField('Подтверждён телефон (дата)', blank=True, null=True)
-    telegram_chat_id = models.CharField('Telegram Chat ID', max_length=50, blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = 'Профиль пользователя'
@@ -82,131 +81,3 @@ class Community(models.Model):
                 suffix += 1
             self.slug = slug
         super().save(*args, **kwargs)
-
-
-class PhoneVerificationToken(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='phone_verification_tokens')
-    token = models.CharField(max_length=6, default=_default_token, db_index=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    expires_at = models.DateTimeField(default=_default_expires_at)
-    used_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Токен подтверждения телефона'
-        verbose_name_plural = 'Токены подтверждения телефона'
-        indexes = [
-            models.Index(fields=['token']),
-            models.Index(fields=['user', 'created_at']),
-        ]
-
-    def __str__(self):
-        return f"PhoneVerificationToken(user={self.user_id}, used={bool(self.used_at)})"
-
-    @property
-    def is_expired(self) -> bool:
-        return timezone.now() >= self.expires_at
-
-    @property
-    def is_active(self) -> bool:
-        return (self.used_at is None) and (not self.is_expired)
-
-
-class TelegramVerificationToken(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='telegram_verification_tokens')
-    token = models.CharField(max_length=6, default=_default_token, db_index=True)
-    chat_id = models.CharField(max_length=50, blank=True, null=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    expires_at = models.DateTimeField(default=_default_expires_at)
-    used_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Токен подтверждения Telegram'
-        verbose_name_plural = 'Токены подтверждения Telegram'
-        indexes = [
-            models.Index(fields=['token']),
-            models.Index(fields=['user', 'created_at']),
-        ]
-
-    def __str__(self):
-        return f"TelegramVerificationToken(user={self.user_id}, chat_id={self.chat_id}, used={bool(self.used_at)})"
-
-    @property
-    def is_expired(self) -> bool:
-        return timezone.now() >= self.expires_at
-
-    @property
-    def is_active(self) -> bool:
-        return (self.used_at is None) and (not self.is_expired)
-
-
-class PasswordResetToken(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='password_reset_tokens')
-    token = models.CharField(max_length=6, default=_default_token, db_index=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    expires_at = models.DateTimeField(default=_default_expires_at)
-    used_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Токен сброса пароля'
-        verbose_name_plural = 'Токены сброса пароля'
-        indexes = [
-            models.Index(fields=['token']),
-            models.Index(fields=['user', 'created_at']),
-        ]
-
-    def __str__(self):
-        return f"PasswordResetToken(user={self.user_id}, used={bool(self.used_at)})"
-
-    @property
-    def is_expired(self) -> bool:
-        return timezone.now() >= self.expires_at
-
-    @property
-    def is_active(self) -> bool:
-        return (self.used_at is None) and (not self.is_expired)
-
-
-class PasswordResetVerification(models.Model):
-    """Модель для двухфакторной верификации сброса пароля через Telegram"""
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='password_reset_verifications')
-    verification_code = models.CharField(max_length=8, default=_default_verification_code, db_index=True)
-    reset_token = models.CharField(max_length=6, blank=True, null=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    expires_at = models.DateTimeField(default=_default_expires_at)
-    verified_at = models.DateTimeField(blank=True, null=True)
-    failed_attempts = models.PositiveIntegerField(default=0)
-    max_attempts = models.PositiveIntegerField(default=3)
-
-    class Meta:
-        verbose_name = 'Верификация сброса пароля'
-        verbose_name_plural = 'Верификации сброса пароля'
-        indexes = [
-            models.Index(fields=['verification_code']),
-            models.Index(fields=['user', 'created_at']),
-        ]
-
-    def __str__(self):
-        return f"PasswordResetVerification(user={self.user_id}, code={self.verification_code}, verified={bool(self.verified_at)})"
-
-    @property
-    def is_expired(self) -> bool:
-        return timezone.now() >= self.expires_at
-
-    @property
-    def is_active(self) -> bool:
-        return (self.verified_at is None) and (not self.is_expired) and (self.failed_attempts < self.max_attempts)
-
-    @property
-    def can_attempt(self) -> bool:
-        return self.failed_attempts < self.max_attempts
-
-    def increment_failed_attempts(self):
-        """Увеличивает счетчик неудачных попыток"""
-        self.failed_attempts += 1
-        self.save(update_fields=['failed_attempts'])
-
-    def mark_verified(self, reset_token: str):
-        """Отмечает верификацию как успешную"""
-        self.verified_at = timezone.now()
-        self.reset_token = reset_token
-        self.save(update_fields=['verified_at', 'reset_token'])

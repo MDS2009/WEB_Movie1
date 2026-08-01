@@ -16,4 +16,3 @@ redis
 djangorestframework-simplejwt
 pytest-django
 coverage
-python-telegram-bot==21.3

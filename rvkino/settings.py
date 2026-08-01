@@ -175,10 +175,6 @@ if not EMAIL_BACKEND:
     else:
         EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# Telegram Bot для верификации
-TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
-TELEGRAM_BOT_USERNAME = config('TELEGRAM_BOT_USERNAME', default='@rvkino_bot')
-
 # Перенаправление после logout
 LOGOUT_REDIRECT_URL = '/movies/'
 

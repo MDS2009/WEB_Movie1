@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
 
 from .models import UserProfile, Community
@@ -183,22 +183,6 @@ class CommunityEditForm(forms.ModelForm):
             raise ValidationError('Этот номер телефона уже используется другим пользователем.')
 
         return normalized
-
-
-class PasswordResetRequestForm(forms.Form):
-    phone = forms.CharField(
-        label='Телефон', 
-        required=True, 
-        help_text='Введите номер телефона привязанный к аккаунту',
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Введите номер телефона',
-            'class': 'form-control'
-        })
-    )
-
-
-class PasswordResetSetForm(SetPasswordForm):
-    pass
 
 
 class LoginForm(AuthenticationForm):

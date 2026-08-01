@@ -11,8 +11,6 @@ import os
 
 from .forms import (
     LoginForm,
-    PasswordResetRequestForm,
-    PasswordResetSetForm,
     UserProfileForm,
     CommunityForm,
     CommunityEditForm,
@@ -20,43 +18,11 @@ from .forms import (
     UserUpdateForm,
     _normalize_ru_phone,
 )
-from .models import PasswordResetToken, PasswordResetVerification, UserProfile, Community
-from .telegram_bot import telegram_bot
+from .models import UserProfile, Community
 from movies.models import FavoriteMovie, FavoriteSeries, FavoriteShow
 
 
 User = get_user_model()
-
-
-def _send_password_reset(request, user):
-    """Создает код верификации для сброса пароля через Telegram"""
-    profile = user.profile
-    
-    if not profile.phone:
-        return None, None
-    
-    # Деактивируем старые токены и верификации
-    PasswordResetToken.objects.filter(
-        user=user, 
-        used_at__isnull=True
-    ).update(used_at=timezone.now())
-    
-    PasswordResetVerification.objects.filter(
-        user=user,
-        verified_at__isnull=True
-    ).update(verified_at=timezone.now())
-    
-    # Создаем новый токен сброса пароля
-    token_obj = PasswordResetToken.objects.create(user=user)
-    
-    # Создаем верификационный код
-    verification_obj = PasswordResetVerification.objects.create(user=user)
-    
-    # Fallback: выводим в лог для отладки
-    print(f"Код верификации для {profile.phone}: {verification_obj.verification_code}")
-    print(f"Токен сброса пароля: {token_obj.token}")
-    
-    return verification_obj, token_obj
 
 
 def register_view(request):
@@ -315,69 +281,6 @@ def profile_edit(request):
             'password_form': password_form,
         },
     )
-
-
-def password_reset_request(request):
-    if request.method == 'POST':
-        form = PasswordResetRequestForm(request.POST)
-        if form.is_valid():
-            phone = form.cleaned_data['phone']
-            normalized_phone = _normalize_ru_phone(phone)
-            users = User.objects.filter(profile__phone__iexact=normalized_phone, is_active=True)
-            
-            if not users.exists():
-                # Не раскрываем существование телефона
-                return render(request, 'users/password_reset_email_sent.html')
-            
-            verification_obj = None
-            for u in users:
-                try:
-                    verification_obj, token_obj = _send_password_reset(request, u)
-                    if verification_obj:
-                        break  # Обрабатываем только первого найденного пользователя
-                except Exception as e:
-                    print(f"Ошибка создания верификации для {u.username}: {e}")
-                    # Не раскрываем существование телефона и не падаем на ошибке
-                    pass
-            
-            # Передаем код верификации в шаблон
-            context = {}
-            if verification_obj:
-                context = {
-                    'verification_code': verification_obj.verification_code,
-                    'expires_at': verification_obj.expires_at
-                }
-                messages.info(request, 'Отправьте этот код в Telegram боту для получения ссылки на сброс пароля.')
-            
-            return render(request, 'users/password_reset_email_sent.html', context)
-    else:
-        form = PasswordResetRequestForm()
-    return render(request, 'users/password_reset_request.html', {'form': form})
-
-
-def password_reset_confirm(request, token: str):
-    token_obj = PasswordResetToken.objects.filter(token=token).select_related('user').first()
-    if not token_obj or not token_obj.is_active:
-        return render(request, 'users/password_reset_invalid.html')
-
-    if request.method == 'POST':
-        # Проверяем код из формы
-        code = request.POST.get('code', '').strip()
-        if code != token_obj.token:
-            messages.error(request, 'Неверный код подтверждения')
-            form = PasswordResetSetForm(user=token_obj.user)
-            return render(request, 'users/password_reset_form.html', {'form': form})
-        
-        form = PasswordResetSetForm(user=token_obj.user, data=request.POST)
-        if form.is_valid():
-            form.save()
-            token_obj.used_at = timezone.now()
-            token_obj.save(update_fields=['used_at'])
-            return render(request, 'users/password_reset_done.html')
-    else:
-        form = PasswordResetSetForm(user=token_obj.user)
-
-    return render(request, 'users/password_reset_form.html', {'form': form})
 
 
 @login_required

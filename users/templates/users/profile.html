@@ -30,19 +30,6 @@
       >
     </div>
 
-    <div class="account-status">
-      {% if user.profile.telegram_chat_id %}
-        <div class="status-item verified">
-          ✅ Telegram подключен
-        </div>
-      {% else %}
-        <div class="status-item not-verified">
-          📱 Telegram не подключен
-          <a href="{% url 'users:telegram_connect' %}" class="status-link">Подключить Telegram</a>
-        </div>
-      {% endif %}
-    </div>
-
     <div class="account-actions">
       <a class="account-btn" href="{% url 'users:profile_edit' %}">Редактировать</a>
       <a class="account-btn" href="{% url 'users:favorites' %}">Избранные</a>
