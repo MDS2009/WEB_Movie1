@@ -29,5 +29,8 @@ urlpatterns = [
     path('shows/<int:show_id>/<slug:slug>/', views.show_detail, name='detail_show'),
 
     path('about/', views.about, name='about'),
+    path('news/', views.news_list, name='news_list'),
+    path('news/<int:news_id>/', views.news_detail, name='news_detail'),
+    path('news/<int:news_id>/<slug:slug>/', views.news_detail, name='news_detail'),
     path('communities/<int:community_id>/', views.community_detail, name='community_detail'),
 ]

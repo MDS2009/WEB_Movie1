@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, Prefetch, F
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 
 from users.models import UserProfile
 from users.models import Community
@@ -21,6 +22,7 @@ from .models import (
     SeriesReview,
     ShowReview,
     CommunityProject,
+    News,
 )
 
 CATALOG_SORTS = {
@@ -526,6 +528,35 @@ def about(request):
         'page_title': 'О компании RV КИНО'
     }
     return render(request, 'movies/about.html', context)
+
+
+def news_list(request):
+    """Список новостей"""
+    news_qs = News.objects.filter(is_published=True, published_at__lte=timezone.now())
+    paginator = Paginator(news_qs, 9)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    context = {
+        'news_list': page_obj,
+        'page_obj': page_obj,
+        'page_title': 'Новости',
+    }
+    return render(request, 'movies/news_list.html', context)
+
+
+def news_detail(request, news_id, slug=None):
+    """Детальная страница новости"""
+    news_item = get_object_or_404(
+        News, id=news_id, is_published=True, published_at__lte=timezone.now()
+    )
+    if slug is None or slug != news_item.slug:
+        return redirect('movies:news_detail', news_id=news_item.id, slug=news_item.slug)
+
+    context = {
+        'news_item': news_item,
+        'page_title': news_item.title,
+    }
+    return render(request, 'movies/news_detail.html', context)
 
 
 def community_detail(request, community_id):

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from django.utils.text import slugify
 
 
@@ -297,3 +298,30 @@ class ShowReview(models.Model):
 
     def __str__(self):
         return f"{self.user} → {self.show}"
+
+
+class News(models.Model):
+    title = models.CharField('Заголовок', max_length=255)
+    slug = models.SlugField('Слаг', max_length=255, unique=True, blank=True)
+    content = models.TextField('Текст новости')
+    image = models.ImageField('Изображение', upload_to='news/', blank=True, null=True)
+    is_published = models.BooleanField('Опубликовано', default=True)
+    published_at = models.DateTimeField('Дата публикации', default=timezone.now)
+    created_by = models.ForeignKey(
+        get_user_model(), on_delete=models.SET_NULL, blank=True, null=True, related_name='news_posts'
+    )
+    created_at = models.DateTimeField('Создано', auto_now_add=True)
+    updated_at = models.DateTimeField('Обновлено', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Новость'
+        verbose_name_plural = 'Новости'
+        ordering = ['-published_at']
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = _generate_unique_slug(News, slugify(self.title) or 'news')
+        super().save(*args, **kwargs)

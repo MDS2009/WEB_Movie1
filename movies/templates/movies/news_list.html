@@ -1,0 +1,43 @@
+{% extends 'movies/base.html' %}
+{% block title %}Новости - RV КИНО{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Новости</h1>
+    </div>
+</section>
+<section class="movies-section">
+    <div class="container">
+        <div class="news-grid">
+            {% for news_item in news_list %}
+            <a href="{% url 'movies:news_detail' news_item.id news_item.slug %}" class="news-card">
+                {% if news_item.image %}
+                    <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}">
+                {% else %}
+                    <div class="no-poster"><i class="fas fa-newspaper"></i></div>
+                {% endif %}
+                <div class="movie-info">
+                    <h3>{{ news_item.title }}</h3>
+                    <p class="news-date">{{ news_item.published_at|date:"d.m.Y" }}</p>
+                    <p class="news-excerpt">{{ news_item.content|truncatewords:25 }}</p>
+                </div>
+            </a>
+            {% empty %}
+            <p>Новостей пока нет.</p>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a class="btn" href="?page={{ page_obj.previous_page_number }}">← Назад</a>
+                {% endif %}
+                <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a class="btn" href="?page={{ page_obj.next_page_number }}">Вперёд →</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

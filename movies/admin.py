@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Movie, Series, Show, Genre, HeroSlide, FavoriteMovie, FavoriteSeries, FavoriteShow, MovieReview, SeriesReview, ShowReview, CommunityProject
+from .models import Movie, Series, Show, Genre, HeroSlide, FavoriteMovie, FavoriteSeries, FavoriteShow, MovieReview, SeriesReview, ShowReview, CommunityProject, News
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
@@ -165,3 +165,17 @@ class CommunityProjectAdmin(admin.ModelAdmin):
             return f"Шоу: {obj.show.title}"
         return "Нет проекта"
     get_project.short_description = 'Проект'
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ['title', 'is_published', 'published_at', 'created_by', 'created_at']
+    list_filter = ['is_published']
+    search_fields = ['title', 'content']
+    prepopulated_fields = {'slug': ('title',)}
+    readonly_fields = ['created_at', 'updated_at']
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk and not obj.created_by:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
