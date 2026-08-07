@@ -140,13 +140,21 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 
 @media (max-width: 900px) {
   .detail-grid { grid-template-columns: 1fr; }
+  .page-header h1 { font-size: 2rem; }
 }
 
 @media (max-width: 600px) {
   .navbar .container, .footer .container, .hero .container, .movies-section .container { padding: 0 10px; }
   .nav-menu { gap: 1rem; font-size: 0.9rem; }
+  .page-header { padding: 1.25rem 0; }
+  .page-header h1 { font-size: 1.5rem; line-height: 1.3; }
+  .news-article-image { max-height: 260px; }
+  .news-card img { height: 170px; }
   .hero h1 { font-size: 1.6rem; }
-  .movies-grid { grid-template-columns: 1fr; gap: 1rem;}
+  /* Каталог/новости/проекты организации: 2 колонки на телефоне (Каталог — Телефон.dc.html) */
+  .movies-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem;}
+  .movie-card img,
+  .movie-card .no-poster { height: auto; aspect-ratio: 2 / 3; }
 }
 
 /* Полупрозрачный фон поверх сайта */
@@ -332,23 +340,35 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .auth-wrapper {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
+    min-height: calc(100vh - 200px);
     padding: 3rem 1rem;
 }
 
 .auth-card {
     background: #1a1a1a;
-    border: 1px solid #e50914;
-    border-radius: 10px;
-    padding: 2rem 2.5rem;
-    max-width: 400px;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 40px 36px;
+    max-width: 420px;
     width: 100%;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.auth-card-wide {
+    max-width: 460px;
 }
 
 .auth-card h1 {
     font-size: 1.8rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin: 0 0 1.5rem;
 }
 
 .form-group {
@@ -362,6 +382,12 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
     font-weight: bold;
 }
 
+.auth-card .form-group label {
+    font-weight: normal;
+    font-size: 13px;
+    color: #ccc;
+}
+
 .auth-card input[type="text"],
 .auth-card input[type="password"],
 .auth-card input[type="email"],
@@ -369,13 +395,13 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .auth-card textarea,
 .auth-card select {
     width: 100%;
-    padding: 0.5rem 0.75rem;
-    border-radius: 5px;
-    border: 1px solid #444;
-    background: #111;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #141414;
     color: #fff;
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 14.5px;
 }
 
 .auth-card textarea {
@@ -402,6 +428,11 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .auth-btn {
     width: 100%;
     text-align: center;
+    padding: 13px 0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-top: 4px;
 }
 
 .auth-extra {
@@ -413,10 +444,51 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .auth-extra a {
     color: #e50914;
     text-decoration: none;
+    font-weight: 600;
 }
 
 .auth-extra a:hover {
     text-decoration: underline;
+}
+
+.auth-forgot-link {
+    text-align: right;
+    margin: -0.5rem 0 0;
+}
+
+.auth-forgot-link a {
+    color: #e50914;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.auth-forgot-link a:hover {
+    text-decoration: underline;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0;
+    font-size: 12px;
+    color: #666;
+}
+
+.auth-divider span {
+    flex: 1;
+    height: 1px;
+    background: #2a2a2a;
+}
+
+.oauth-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.oauth-btn i.fa-yandex {
+    color: #ff0000;
 }
 
 @media (max-width: 785px) {
@@ -634,6 +706,8 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
     }
 }
 
+/* ===== Правовые страницы (политика, соглашение) ===== */
+
 .legal-page {
     background: #1a1a1a;
     border: 1px solid #e50914;
@@ -648,6 +722,8 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .legal-page h1 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 
 .legal-page h2 {
@@ -691,26 +767,6 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
         font-size: 0.85rem;
         align-items: flex-start;
     }
-}
-
-/* ===== Правовые страницы (политика, соглашение) ===== */
-
-.legal-page {
-    background: #1a1a1a;
-    border: 1px solid #e50914;
-    border-radius: 10px;
-    padding: 2rem 2.5rem;
-    margin: 3rem auto;
-    max-width: 900px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-    line-height: 1.6;
-}
-
-.legal-page h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    word-wrap: break-word;
-    hyphens: auto;
 }
 
 /* Адаптация заголовка под мобильный экран */
@@ -771,7 +827,6 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
   color: #fff;
 }
 
-.detail-actions { display:flex; gap:14px; flex-wrap:wrap; margin-top:14px; margin-bottom:14px; }
 .meta-row { display:flex; gap:10px; flex-wrap:wrap; margin: 6px 0 14px; }
 .badge { background:#2a2a2a; padding:4px 10px; border-radius:999px; font-size:14px; }
 .meta-line { margin: 6px 0; opacity: 0.95; }
@@ -789,9 +844,25 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .detail-actions{
   display: flex;
   gap: 14px;           /* расстояние между кнопками */
+  align-items: center;
   flex-wrap: wrap;
-  margin-top: 8px;     /* на всякий случай, если сверху не хватит */
+  margin-top: 8px;
+  margin-bottom: 20px;
 }
+
+.detail-kicker {
+  display: inline-block;
+  color: #e50914;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.detail-back-link { margin-top: 24px; }
+.detail-back-link a { color: #999; font-size: 14px; text-decoration: none; }
+.detail-back-link a:hover { color: #fff; }
 
 /* ===== Верхний hero-слайдер ===== */
 .hero-slider { position: relative; height: 420px; overflow: hidden; border-bottom: 2px solid #e50914; z-index: 1; }
@@ -818,9 +889,10 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .rail-btn { width: 36px; height: 36px; border-radius: 999px; border: 1px solid #333; background: #000; color: #fff; cursor:pointer; }
 
 @media (max-width: 600px){
-  .hero-slider { height: 320px; }
-  .hero-title { font-size: 28px; }
-  .rail-card { width: 260px; height: 150px; }
+  .hero-slider { height: 220px; }
+  .hero-title { font-size: 22px; }
+  .rail-card { width: 170px; height: 95px; }
+  .org-avatar { width: 36px; height: 36px; }
 }
 
 /* ===== ДОПОЛНЕНИЯ ДЛЯ HERO ===== */
@@ -1377,6 +1449,13 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
   text-transform: uppercase;
 }
 
+.member-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .management-back {
   margin-top: 2rem;
   text-align: center;
@@ -1443,3 +1522,657 @@ body { display: flex; flex-direction: column; background: #141414; color: #fff; 
 .news-article { max-width: 800px; margin: 0 auto; }
 .news-article-image { width: 100%; max-height: 450px; object-fit: cover; border-radius: 10px; margin-bottom: 2rem; }
 .news-article-content { margin-bottom: 2rem; line-height: 1.7; }
+
+/* =========================================================
+   Desktop redesign — component primitives (≥1024px focus)
+   ========================================================= */
+
+/* ---- Button hierarchy (used alongside the generic .btn) ---- */
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 15.5px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: #e50914;
+    color: #fff;
+    font-weight: 700;
+    padding: 13px 28px;
+}
+.btn-primary:hover { background: #b20710; }
+
+.btn-secondary {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 12px 24px;
+}
+.btn-secondary:hover { border-color: #666; }
+
+.btn-ghost {
+    background: transparent;
+    color: #e50914;
+    padding: 12px 18px;
+}
+.btn-ghost:hover { color: #ff4d4f; }
+
+/* ---- Pill filter row (catalog search + sort chips) ---- */
+.filter-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+.filter-search {
+    flex: 1;
+    min-width: 220px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 999px;
+    padding: 12px 20px;
+    color: #fff;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.filter-search i { color: #777; }
+.filter-search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+}
+.filter-search input::placeholder { color: #777; }
+
+.filter-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.filter-chip {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #ccc;
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.filter-chip:hover { border-color: #555; color: #fff; }
+.filter-chip.active { background: #e50914; border-color: #e50914; color: #fff; font-weight: 600; }
+
+/* ---- Poster corner badges + hover quick actions ---- */
+.movie-card { position: relative; }
+.poster-frame { position: relative; }
+
+.poster-badge-rating,
+.poster-badge-age {
+    position: absolute;
+    top: 8px;
+    background: rgba(0, 0, 0, 0.72);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    z-index: 2;
+}
+.poster-badge-rating { left: 8px; color: #fff; }
+.poster-badge-rating i { color: #e50914; margin-right: 3px; }
+.poster-badge-age { right: 8px; color: #ccc; }
+
+.card-hover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.9));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 14px;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.movie-card:hover .card-hover-overlay { opacity: 1; }
+
+.card-quick-actions { display: flex; gap: 8px; }
+
+.card-quick-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+}
+.card-quick-btn.play { background: #e50914; }
+.card-quick-btn.favorite { background: rgba(255,255,255,0.14); }
+.card-quick-btn.favorite:hover,
+.card-quick-btn.play:hover { filter: brightness(1.15); }
+
+/* ---- Detail page meta chips ---- */
+.meta-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+.meta-chip {
+    background: #1a1a1a;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    color: #ccc;
+    white-space: nowrap;
+}
+.meta-chip i { color: #e50914; margin-right: 6px; }
+
+/* ---- Tabs (detail page: описание / актёры / отзывы) ---- */
+.tabs-nav {
+    display: flex;
+    gap: 28px;
+    border-bottom: 1px solid #262626;
+    flex-wrap: wrap;
+}
+.tab-link {
+    color: #888;
+    font-size: 15px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: inherit;
+}
+.tab-link.active { color: #fff; font-weight: 600; border-bottom-color: #e50914; }
+
+.tab-panel { display: none; padding-top: 20px; }
+.tab-panel.active { display: block; }
+
+/* ---- Sticky bottom action bar (detail pages) ---- */
+.sticky-cta-bar {
+    position: sticky;
+    bottom: 0;
+    background: #141414;
+    border-top: 1px solid #2a2a2a;
+    padding: 16px 0;
+    margin-top: 2rem;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.sticky-cta-bar.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.sticky-cta-bar .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.sticky-cta-title { font-size: 15px; font-weight: 600; }
+
+/* ---- Management dropdown (replaces 3-button !important row) ---- */
+.manage-dropdown { position: relative; display: inline-block; }
+.manage-dropdown-toggle {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #ccc;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: inherit;
+}
+.manage-dropdown-toggle:hover { border-color: #555; color: #fff; }
+
+.manage-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    padding: 8px;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 30;
+}
+.manage-dropdown-menu.open { display: flex; }
+
+.manage-dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+}
+.manage-dropdown-menu a:hover { background: #2a2a2a; }
+.manage-dropdown-menu a i { width: 16px; color: #888; }
+.manage-dropdown-menu a.danger { color: #e50914; }
+.manage-dropdown-menu a.danger i { color: #e50914; }
+
+/* ---- Role-badged avatar grid (community members) ---- */
+.role-avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 20px;
+}
+.role-avatar-item { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.role-avatar-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+}
+.role-avatar-circle.owner { border: 2px solid #e50914; }
+.role-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+.role-avatar-name { font-size: 13px; color: #fff; }
+.role-badge {
+    font-size: 10.5px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.role-badge.owner { background: #e50914; color: #fff; }
+.role-badge.moderator { background: #333; color: #ccc; }
+.role-badge.member { background: #2a2a2a; color: #999; }
+
+/* ---- Profile page (two-column) ---- */
+.profile-layout { padding: 2.4rem 0 5rem; }
+.profile-layout-inner {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.profile-sidebar-card,
+.profile-section-card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 28px 26px;
+}
+
+.profile-sidebar-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.profile-avatar-wrap { position: relative; }
+.profile-avatar-circle {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: 2px solid #e50914;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #555;
+    font-size: 30px;
+}
+.profile-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+.avatar-edit-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: #e50914;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #141414;
+    color: #fff;
+    font-size: 11px;
+    text-decoration: none;
+}
+.avatar-edit-badge:hover { background: #b20710; }
+
+.profile-name { font-size: 19px; font-weight: 700; }
+.profile-email { font-size: 13.5px; color: #888; }
+
+.profile-tabs {
+    display: flex;
+    gap: 14px;
+    border-bottom: 1px solid #262626;
+    width: 100%;
+    justify-content: center;
+    padding-bottom: 0;
+}
+.profile-tabs span,
+.profile-tabs a {
+    font-size: 14px;
+    color: #888;
+    padding-bottom: 10px;
+    text-decoration: none;
+}
+.profile-tabs span.active { color: #fff; font-weight: 600; border-bottom: 2px solid #e50914; }
+.profile-tabs a:hover { color: #fff; }
+
+.profile-edit-btn { width: 100%; justify-content: center; margin-top: 4px; }
+
+.profile-main-col { display: flex; flex-direction: column; gap: 20px; }
+
+.profile-section-card h3 { margin: 0 0 6px; font-size: 16px; }
+.profile-section-sub { margin: 0 0 18px; color: #888; font-size: 13.5px; }
+
+.favorites-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+}
+.favorite-preview-tile {
+    display: block;
+    border-radius: 8px;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+.favorite-preview-tile img { width: 100%; height: 100%; object-fit: cover; }
+.favorite-preview-tile .no-poster { width: 100%; height: 100%; }
+.favorite-preview-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .profile-layout-inner { grid-template-columns: 1fr; }
+    .favorites-preview-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---- Search page ---- */
+.search-page { display: flex; flex-direction: column; gap: 2rem; }
+
+.search-hero-form { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+
+.search-hero-input {
+    width: 100%;
+    max-width: 680px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 999px;
+    padding: 16px 26px;
+    color: #eee;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.search-hero-input i.fa-magnifying-glass { color: #e50914; }
+.search-hero-input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 17px;
+    outline: none;
+}
+.search-hero-input input::placeholder { color: #777; }
+.search-clear-btn { color: #666; text-decoration: none; }
+.search-clear-btn:hover { color: #fff; }
+
+.search-kind-chips { justify-content: center; }
+
+.search-secondary-filters {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.search-secondary-filters select {
+    background: #1a1a1a;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.search-results-count { text-align: center; color: #888; font-size: 14px; margin: 0; }
+
+.search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 760px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.search-result-row {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    background: #1a1a1a;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s;
+}
+.search-result-row:hover { border-color: #e50914; }
+
+.search-result-thumb {
+    flex: 0 0 64px;
+    height: 90px;
+    border-radius: 8px;
+    background: #232323;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 1.5rem;
+}
+.search-result-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.search-result-thumb.round { border-radius: 50%; width: 64px; height: 64px; }
+
+.search-result-info { flex: 1; min-width: 0; }
+.search-result-title { font-size: 16px; font-weight: 600; }
+.search-result-meta { font-size: 13px; color: #888; margin-top: 4px; }
+.search-result-meta i { color: #e50914; }
+
+.search-result-action {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e50914;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+}
+.search-result-action.outline {
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 13px;
+}
+.search-result-chevron { color: #666; flex: 0 0 auto; }
+
+.search-hint { text-align: center; color: #888; }
+
+/* =========================================================
+   Tablet breakpoint (≈601–1024px, iPad Air portrait 834px)
+   Lower bound matches the codebase's existing phone cutoff
+   (600px, used by the mobile-only rules above) so there's no
+   gap where an in-between width falls back to the old design.
+   Reuses existing desktop components/JS; mostly reflow via
+   media queries, plus a tablet-styled nav dropdown that
+   reuses the same .burger/.nav-menu.active toggle already
+   wired up in app.js for mobile.
+   ========================================================= */
+@media (max-width: 1024px) and (min-width: 601px) {
+  /* ---- Nav: collapse to burger + right-anchored dropdown ---- */
+  .burger { display: flex; z-index: 1100; }
+  .logo { margin-right: 0; }
+
+  .nav-menu {
+    position: absolute;
+    top: 100%;
+    left: auto;
+    right: 20px;
+    width: auto;
+    min-width: 220px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  }
+  .nav-menu.active { display: flex; }
+  .nav-menu li { width: 100%; list-style: none; }
+  .nav-menu a {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14.5px;
+    color: #ccc;
+  }
+  .nav-menu a:hover { background: #2a2a2a; color: #fff; }
+
+  /* ---- Catalog grid: explicit 3 columns ---- */
+  .movies-grid { grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+
+  /* ---- Movie/series/show/community detail: keep 2-col layout,
+     narrower poster column instead of collapsing to 1 column ---- */
+  .detail-grid { grid-template-columns: 200px 1fr; gap: 1.8rem; }
+
+  /* ---- Community member grid: explicit 4 columns, smaller avatars ---- */
+  .role-avatar-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .role-avatar-circle { width: 56px; height: 56px; }
+
+  /* ---- Profile favorites preview: explicit 4 columns ---- */
+  .favorites-preview-grid { grid-template-columns: repeat(4, 1fr); }
+
+  /* ---- Home page hero + rails: tighter tablet sizing ---- */
+  .hero-slider { height: 320px; }
+  .hero-title { font-size: 34px; }
+  .rail-card { width: 240px; height: 135px; }
+}
+
+/* =========================================================
+   Phone breakpoint (≤600px, design mockups target ~390-430px
+   e.g. iPhone 14 / Pixel width — see "Телефон/*.dc.html")
+   Upper bound (600px) matches the codebase's pre-existing
+   phone cutoff used above (.movies-grid, .account-card, hero
+   rails, etc.) and butts up cleanly against the tablet
+   block's `min-width: 601px` lower bound directly above —
+   600/601 meet with no gap and no overlap.
+   Reuses existing desktop/tablet components, classes and JS
+   (burger/.nav-menu.active toggle, tabs-nav JS, sticky-cta-bar
+   IntersectionObserver, manage-dropdown JS) — only the sizing/
+   layout changes here, no new markup or scripts required.
+   ========================================================= */
+@media (max-width: 600px) {
+  /* ---- Nav: burger + full-width floating dropdown card
+     (phone mockups use a rounded card spanning the viewport
+     width minus 14px margins, instead of tablet's compact
+     right-anchored dropdown) ---- */
+  .nav-menu {
+    position: absolute;
+    top: 100%;
+    left: 14px;
+    right: 14px;
+    width: auto;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  }
+  .nav-menu.active { display: flex; }
+  .nav-menu li { width: 100%; list-style: none; }
+  .nav-menu a {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14.5px;
+    color: #ccc;
+  }
+  .nav-menu a:hover { background: #2a2a2a; color: #fff; }
+
+  /* ---- Movie/series/show/community detail: poster stays compact
+     (max-width 180px, 2:3) instead of stretching full-bleed when
+     .detail-grid collapses to 1 column below 900px ---- */
+  .detail-poster,
+  .no-poster-large {
+    max-width: 180px;
+    height: auto;
+    aspect-ratio: 2 / 3;
+  }
+
+  /* ---- Detail tabs (Описание/Актёры/Отзывы): scroll horizontally
+     instead of wrapping to a second line on narrow screens ---- */
+  .tabs-nav { gap: 20px; flex-wrap: nowrap; overflow-x: auto; }
+  .tab-link { white-space: nowrap; }
+
+  /* ---- Sticky bottom CTA bar: tighter phone padding ---- */
+  .sticky-cta-bar { padding: 12px 0; }
+  .sticky-cta-bar .container { gap: 12px; }
+
+  /* ---- Community member grid: explicit 3 columns on phone ---- */
+  .role-avatar-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  /* ---- Profile sidebar: horizontal avatar+name row (as in
+     Профиль — Телефон.dc.html) instead of the stacked/centered
+     card used at tablet width and above ---- */
+  .profile-sidebar-card {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px;
+  }
+  .profile-avatar-circle { width: 80px; height: 80px; }
+  .profile-name-block { flex: 1; min-width: 170px; }
+  .profile-tabs { justify-content: flex-start; width: auto; }
+}

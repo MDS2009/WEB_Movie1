@@ -74,6 +74,7 @@ JAZZMIN_SETTINGS = {
     "site_header": "RV КИНО",
     "site_brand": "RV КИНО",
     "welcome_sign": "Добро пожаловать в админ-панель RV КИНО",
+    "custom_js": "movies/js/admin_extras.js",
 }
 
 MIDDLEWARE = [
@@ -174,6 +175,11 @@ if not EMAIL_BACKEND:
         EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     else:
         EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Вход через Яндекс OAuth
+YANDEX_CLIENT_ID = config('YANDEX_CLIENT_ID', default='')
+YANDEX_CLIENT_SECRET = config('YANDEX_CLIENT_SECRET', default='')
+YANDEX_REDIRECT_URI = config('YANDEX_REDIRECT_URI', default='')
 
 # Перенаправление после logout
 LOGOUT_REDIRECT_URL = '/movies/'

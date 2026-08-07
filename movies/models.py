@@ -1,4 +1,9 @@
+from decimal import Decimal, ROUND_HALF_UP
+
 from django.db import models
+from django.db.models import Avg
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.text import slugify
@@ -325,3 +330,30 @@ class News(models.Model):
         if not self.slug:
             self.slug = _generate_unique_slug(News, slugify(self.title) or 'news')
         super().save(*args, **kwargs)
+
+
+def _recalculate_rating(parent, review_qs):
+    """Пересчитывает средний рейтинг на основе опубликованных отзывов"""
+    avg = review_qs.filter(is_active=True).aggregate(avg=Avg('rating'))['avg']
+    new_rating = Decimal(str(avg)).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP) if avg is not None else Decimal('0.0')
+    if parent.rating != new_rating:
+        parent.rating = new_rating
+        parent.save(update_fields=['rating'])
+
+
+@receiver(post_save, sender=MovieReview)
+@receiver(post_delete, sender=MovieReview)
+def update_movie_rating(sender, instance, **kwargs):
+    _recalculate_rating(instance.movie, MovieReview.objects.filter(movie=instance.movie))
+
+
+@receiver(post_save, sender=SeriesReview)
+@receiver(post_delete, sender=SeriesReview)
+def update_series_rating(sender, instance, **kwargs):
+    _recalculate_rating(instance.series, SeriesReview.objects.filter(series=instance.series))
+
+
+@receiver(post_save, sender=ShowReview)
+@receiver(post_delete, sender=ShowReview)
+def update_show_rating(sender, instance, **kwargs):
+    _recalculate_rating(instance.show, ShowReview.objects.filter(show=instance.show))

@@ -12,49 +12,119 @@
                 {% endif %}
             </div>
             <div class="info-column">
+                <span class="detail-kicker">Фильм</span>
                 <h1>{{ movie.title }}</h1>
-                <div class="movie-meta">
-                    <span><i class="fas fa-calendar"></i> {{ movie.year }}</span>
-                    <span><i class="fas fa-clock"></i> {{ movie.duration }} мин</span>
-                    <span><i class="fas fa-star"></i> {{ movie.rating }}/10</span>
-                    <span><i class="fas fa-eye"></i> {{ movie.views }} просмотров</span>
-                    <span><i class="fa-solid fa-child"></i> {{movie.age_rating}} </span>
+                <div class="meta-chips">
+                    {% if movie.rating %}<span class="meta-chip"><i class="fas fa-star"></i>{{ movie.rating }}/10</span>{% endif %}
+                    <span class="meta-chip"><i class="fas fa-calendar"></i>{{ movie.year }}</span>
+                    <span class="meta-chip"><i class="fas fa-clock"></i>{{ movie.duration }} мин</span>
+                    {% if movie.age_rating %}<span class="meta-chip"><i class="fa-solid fa-child"></i>{{ movie.age_rating }}</span>{% endif %}
+                    <span class="meta-chip"><i class="fas fa-eye"></i>{{ movie.views }}</span>
                 </div>
 
-                {% if movie.actors %}<p class="meta-line"><b>Актёры:</b> {{ movie.actors }}</p>{% endif %}
-                {% if movie.director %}<p class="meta-line"><b>Режиссёр:</b> {{ movie.director }}</p>{% endif %}
-                {% if movie.producer %}<p class="meta-line"><b>Продюсер:</b> {{ movie.producer }}</p>{% endif %}
-                {% if movie.genres.all|length %}
-                    <p class="meta-line"><b>Жанры:</b> {{ movie.genres.all|join:", " }}</p>
-                {% endif %}
-
-                <div class="detail-description">
-                    <h2>Описание</h2>
-                    <p>{{ movie.description }}</p>
-                </div>
-
-                <div class="detail-actions">
-                    <a href="{% url 'movies:films' %}" class="btn">← Назад к каталогу</a>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'movies:favorite_movie' movie.id %}" class="btn">
-                            {% if is_favorite %}Убрать из избранного{% else %}В избранное{% endif %}
-                        </a>
-                    {% endif %}
-
-                    <button class="btn js-open-player" type="button"
+                <div class="detail-actions" id="cta-row">
+                    <button class="btn-primary js-open-player" type="button"
                             data-title="{{ movie.title }} — просмотр"
                             data-src="{{ movie.video_url|default:'' }}">
-                      Смотреть
+                      <i class="fas fa-play"></i>Смотреть
                     </button>
 
-                    <button class="btn js-open-player" type="button"
+                    <button class="btn-secondary js-open-player" type="button"
                             data-title="{{ movie.title }} — трейлер"
                             data-src="{{ movie.trailer_url|default:'' }}">
                       Трейлер
                     </button>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'movies:favorite_movie' movie.id %}" class="btn-ghost">
+                            {% if is_favorite %}<i class="fas fa-heart"></i>Убрать из избранного{% else %}<i class="far fa-heart"></i>В избранное{% endif %}
+                        </a>
+                    {% endif %}
                 </div>
+
+                <div class="tabs-nav">
+                    <button type="button" class="tab-link active" data-tab="description">Описание</button>
+                    <button type="button" class="tab-link" data-tab="cast">Актёры и съёмочная группа</button>
+                    <button type="button" class="tab-link" data-tab="reviews">Отзывы · {{ reviews|length }}</button>
+                </div>
+
+                <div class="tab-panel active" data-tab-panel="description">
+                    <p>{{ movie.description }}</p>
+                </div>
+
+                <div class="tab-panel" data-tab-panel="cast">
+                    {% if movie.actors %}<p class="meta-line"><b>Актёры:</b> {{ movie.actors }}</p>{% endif %}
+                    {% if movie.director %}<p class="meta-line"><b>Режиссёр:</b> {{ movie.director }}</p>{% endif %}
+                    {% if movie.producer %}<p class="meta-line"><b>Продюсер:</b> {{ movie.producer }}</p>{% endif %}
+                    {% if movie.genres.all|length %}
+                        <p class="meta-line"><b>Жанры:</b> {{ movie.genres.all|join:", " }}</p>
+                    {% endif %}
+                    {% if not movie.actors and not movie.director and not movie.producer and not movie.genres.all|length %}
+                        <p>Информация об актёрах и съёмочной группе пока не добавлена.</p>
+                    {% endif %}
+                </div>
+
+                <div class="tab-panel" data-tab-panel="reviews">
+                    {% if user.is_authenticated %}
+                        <form method="post" class="review-form">
+                            {% csrf_token %}
+                            {{ review_form.non_field_errors }}
+                            <label>Оценка (1-10)</label>
+                            {{ review_form.rating }}
+                            <label>Текст отзыва</label>
+                            {{ review_form.text }}
+                            <button type="submit" class="btn">Оставить отзыв</button>
+                        </form>
+                    {% else %}
+                        <p>Чтобы оставить отзыв, войдите в аккаунт.</p>
+                    {% endif %}
+
+                    <div class="reviews-list">
+                        {% for review in reviews %}
+                            <div class="review-item">
+                                <div class="review-meta">
+                                    <strong>{{ review.user.username }}</strong>
+                                    <span>★ {{ review.rating }}</span>
+                                </div>
+                                <p>{{ review.text }}</p>
+                            </div>
+                        {% empty %}
+                            <p>Пока нет отзывов.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <p class="detail-back-link"><a href="{% url 'movies:films' %}">← Назад к каталогу</a></p>
             </div>
         </div>
+
+        {% if similar_items %}
+        <div class="rail" style="padding: 0; margin-top: 3rem;">
+            <div class="rail-head">
+                <h2>Похожие фильмы</h2>
+                <div class="rail-nav">
+                    <button type="button" class="rail-btn" data-scroll="similar-rail" data-dir="-1">‹</button>
+                    <button type="button" class="rail-btn" data-scroll="similar-rail" data-dir="1">›</button>
+                </div>
+            </div>
+            <div class="rail-viewport" id="similar-rail">
+                {% for item in similar_items %}
+                    <a class="rail-card" href="{% url 'movies:detail' item.id item.slug %}">
+                        {% if item.poster %}
+                            <img src="{{ item.poster.url }}" alt="{{ item.title }}">
+                        {% else %}
+                            <div class="no-poster">🎬</div>
+                        {% endif %}
+                        <div class="rail-meta">
+                            {% if item.rating %}<span class="rail-pill">★ {{ item.rating }}</span>{% endif %}
+                        </div>
+                        <div class="rail-title">{{ item.title }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="modal-overlay" id="not-available-modal">
           <div class="modal-window">
             <h3>Ой!</h3>
@@ -62,36 +132,16 @@
             <button type="button" class="modal-btn" id="modal-close-btn">Понятно</button>
           </div>
         </div>
+    </div>
 
-        <div class="reviews-block">
-            <h2>Отзывы</h2>
-            {% if user.is_authenticated %}
-                <form method="post" class="review-form">
-                    {% csrf_token %}
-                    {{ review_form.non_field_errors }}
-                    <label>Оценка (1-10)</label>
-                    {{ review_form.rating }}
-                    <label>Текст отзыва</label>
-                    {{ review_form.text }}
-                    <button type="submit" class="btn">Оставить отзыв</button>
-                </form>
-            {% else %}
-                <p>Чтобы оставить отзыв, войдите в аккаунт.</p>
-            {% endif %}
-
-            <div class="reviews-list">
-                {% for review in reviews %}
-                    <div class="review-item">
-                        <div class="review-meta">
-                            <strong>{{ review.user.username }}</strong>
-                            <span>★ {{ review.rating }}</span>
-                        </div>
-                        <p>{{ review.text }}</p>
-                    </div>
-                {% empty %}
-                    <p>Пока нет отзывов.</p>
-                {% endfor %}
-            </div>
+    <div class="sticky-cta-bar" id="sticky-cta-bar">
+        <div class="container">
+            <span class="sticky-cta-title">{{ movie.title }}</span>
+            <button class="btn-primary js-open-player" type="button"
+                    data-title="{{ movie.title }} — просмотр"
+                    data-src="{{ movie.video_url|default:'' }}">
+              <i class="fas fa-play"></i>Смотреть
+            </button>
         </div>
     </div>
 </section>

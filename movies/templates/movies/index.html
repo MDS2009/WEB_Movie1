@@ -139,6 +139,37 @@
     </div>
   </div>
 </section>
+<!-- ЛЕНТА: ШОУ -->
+<section class="rail">
+  <div class="container">
+    <div class="rail-head">
+      <h2>Шоу</h2>
+      <div class="rail-nav">
+        <button type="button" class="rail-btn" data-scroll="shows-rail" data-dir="-1">‹</button>
+        <button type="button" class="rail-btn" data-scroll="shows-rail" data-dir="1">›</button>
+      </div>
+    </div>
 
+    <div class="rail-viewport" id="shows-rail">
+      {% for show in shows %}
+        <a class="rail-card" href="{% url 'movies:detail_show' show.id show.slug %}">
+          {% if show.poster %}
+            <img src="{{ show.poster.url }}" alt="{{ show.title }}">
+          {% else %}
+            <div class="no-poster">📺</div>
+          {% endif %}
+
+          <div class="rail-meta">
+            {% if show.rating %}<span class="rail-pill">★ {{ show.rating }}</span>{% endif %}
+          </div>
+
+          <div class="rail-title">{{ show.title }}</div>
+        </a>
+      {% empty %}
+        <p>Шоу пока нет.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
 
 {% endblock %}

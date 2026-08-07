@@ -3,81 +3,97 @@
 {% block title %}Аккаунт - RV КИНО{% endblock %}
 
 {% block content %}
-<div class="profile-wrapper">
-  <div class="profile-card account-card">
-    <div class="account-avatar">
-      <div class="account-avatar-circle{% if user.profile.avatar %} has-avatar{% endif %}">
-        {% if user.profile.avatar %}
-          <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="account-avatar-img">
+<div class="profile-layout">
+  <div class="container profile-layout-inner">
+
+    <div class="profile-sidebar-card">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar-circle">
+          {% if user.profile.avatar %}
+            <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
+          {% else %}
+            <i class="fas fa-user"></i>
+          {% endif %}
+        </div>
+        <a href="{% url 'users:profile_edit' %}" class="avatar-edit-badge" title="Редактировать профиль"><i class="fas fa-pen"></i></a>
+      </div>
+
+      <div class="profile-name-block">
+        <div class="profile-name">{{ user.get_full_name|default:user.username }}</div>
+        <div class="profile-email">{{ user.email }}</div>
+      </div>
+
+      <div class="profile-tabs">
+        <span class="active">Профиль</span>
+        <a href="{% url 'users:favorites' %}">Избранное</a>
+        {% if community_tab_url %}
+          <a href="{{ community_tab_url }}">Сообщество</a>
         {% endif %}
       </div>
+
+      <a href="{% url 'users:profile_edit' %}" class="btn-secondary profile-edit-btn">Редактировать профиль</a>
     </div>
 
-    <div class="account-fields">
-      <input
-        class="account-input"
-        type="text"
-        value="{{ user.get_full_name|default:user.username }}"
-        placeholder="Имя Фамилия"
-        readonly
-      >
-      <input
-        class="account-input"
-        type="email"
-        value="{{ user.email }}"
-        placeholder="Почта"
-        readonly
-      >
+    <div class="profile-main-col">
+
+      <div class="profile-section-card">
+        <h3>Избранное</h3>
+        <p class="profile-section-sub">{{ favorites_count }} фильм{{ favorites_count|pluralize:",ов" }} и сериалов сохранено</p>
+        {% if favorites_preview %}
+          <div class="favorites-preview-grid">
+            {% for item in favorites_preview %}
+              <a href="{% if item.kind == 'movie' %}{% url 'movies:detail' item.id item.slug %}{% elif item.kind == 'series' %}{% url 'movies:detail_series' item.id item.slug %}{% else %}{% url 'movies:detail_show' item.id item.slug %}{% endif %}" class="favorite-preview-tile">
+                {% if item.poster %}
+                  <img src="{{ item.poster }}" alt="{{ item.title }}">
+                {% else %}
+                  <div class="no-poster"><i class="fas fa-film"></i></div>
+                {% endif %}
+              </a>
+            {% endfor %}
+            {% if favorites_count > 6 %}
+              <a href="{% url 'users:favorites' %}" class="favorite-preview-tile favorite-preview-more">+{{ favorites_count|add:"-6" }}</a>
+            {% endif %}
+          </div>
+        {% else %}
+          <p>Пока ничего не добавлено в избранное.</p>
+        {% endif %}
+      </div>
+
+      <div class="profile-section-card">
+        <h3>Согласия</h3>
+        <form method="post" class="profile-consent-form">
+          {% csrf_token %}
+          <label class="checkbox-row">
+            <input type="checkbox" name="accepted_privacy" {% if accepted_privacy %}checked{% endif %}>
+            <span>Я принимаю <span class="nbsp"> </span>
+              <a href="{% url 'users:privacy' %}" class="legal-link">политику конфиденциальности</a>
+            </span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" name="accepted_terms" {% if accepted_terms %}checked{% endif %}>
+            <span>Я принимаю <span class="nbsp"> </span>
+              <a href="{% url 'users:terms' %}" class="legal-link">пользовательское соглашение</a>
+            </span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" name="accepted_data_processing" {% if accepted_data_processing %}checked{% endif %}>
+            <span>Я даю <span class="nbsp"> </span>
+              <a href="{% url 'users:data_processing_consent' %}" class="legal-link">согласие на обработку персональных данных</a>
+            </span>
+          </label>
+
+          <button type="submit" class="btn auth-btn">Сохранить</button>
+        </form>
+
+        {% if accepted_at %}
+          <p class="profile-consent-info">Согласия приняты: {{ accepted_at }}</p>
+        {% endif %}
+      </div>
+
     </div>
 
-    <div class="account-actions">
-      <a class="account-btn" href="{% url 'users:profile_edit' %}">Редактировать</a>
-      <a class="account-btn" href="{% url 'users:favorites' %}">Избранные</a>
-      {% if user.profile.can_create_community %}
-        <a class="account-btn" href="{% url 'users:create_community' %}">Создать сообщество</a>
-      {% endif %}
-    </div>
-
-    <form method="post" class="profile-consent-form account-consent">
-      {% csrf_token %}
-      <label class="checkbox-row account-checkbox">
-        <input type="checkbox" name="accepted_privacy"
-               {% if accepted_privacy %}checked{% endif %}>
-        <span>Я принимаю <span class="nbsp"> </span>
-          <a href="{% url 'users:privacy' %}" class="legal-link">
-            политику конфиденциальности
-          </a>
-        </span>
-      </label>
-
-      <label class="checkbox-row account-checkbox">
-        <input type="checkbox" name="accepted_terms"
-               {% if accepted_terms %}checked{% endif %}>
-        <span>Я принимаю <span class="nbsp"> </span>
-          <a href="{% url 'users:terms' %}" class="legal-link">
-            пользовательское соглашение
-          </a>
-        </span>
-      </label>
-
-      <label class="checkbox-row account-checkbox">
-        <input type="checkbox" name="accepted_data_processing"
-               {% if accepted_data_processing %}checked{% endif %}>
-        <span>Я даю <span class="nbsp"> </span>
-          <a href="{% url 'users:data_processing_consent' %}" class="legal-link">
-            согласие на обработку персональных данных
-          </a>
-        </span>
-      </label>
-
-      <button type="submit" class="btn auth-btn">Сохранить</button>
-    </form>
-
-    {% if accepted_at %}
-      <p class="profile-consent-info">
-        Согласия приняты: {{ accepted_at }}
-      </p>
-    {% endif %}
   </div>
 </div>
 {% endblock %}

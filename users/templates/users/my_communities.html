@@ -1,0 +1,33 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}Мои сообщества - RV КИНО{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Мои сообщества</h1>
+    </div>
+</section>
+<section class="movies-section">
+  <div class="container search-page">
+    <p class="search-results-count">Вы состоите в {{ communities|length }} сообществ{{ communities|length|pluralize:",ах" }}</p>
+
+    <div class="search-results-list">
+      {% for community in communities %}
+        <a href="{% url 'movies:community_detail' community.id %}" class="search-result-row">
+          <div class="search-result-thumb round">
+            {% if community.avatar %}<img src="{{ community.avatar.url }}" alt="{{ community.name }}">{% else %}<i class="fas fa-users"></i>{% endif %}
+          </div>
+          <div class="search-result-info">
+            <div class="search-result-title">{{ community.name }}</div>
+            <div class="search-result-meta">Организация · {{ community.members_users.count }} участник{{ community.members_users.count|pluralize:",ов" }}</div>
+          </div>
+          <span class="search-result-action outline">Открыть</span>
+        </a>
+      {% empty %}
+        <p>Вы пока не состоите ни в одном сообществе.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

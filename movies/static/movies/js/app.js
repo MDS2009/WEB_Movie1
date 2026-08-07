@@ -125,6 +125,47 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') closePlayer();
   });
 
+  // ===== Tabs (страница фильма/сериала/шоу: Описание/Актёры/Отзывы) =====
+  document.querySelectorAll('.tabs-nav').forEach((nav) => {
+    const links = nav.querySelectorAll('.tab-link');
+    const panelsContainer = nav.parentElement;
+    links.forEach((link) => {
+      link.addEventListener('click', () => {
+        const target = link.dataset.tab;
+        links.forEach((l) => l.classList.toggle('active', l === link));
+        panelsContainer.querySelectorAll(':scope > .tab-panel').forEach((panel) => {
+          panel.classList.toggle('active', panel.dataset.tabPanel === target);
+        });
+      });
+    });
+  });
+
+  // ===== Sticky CTA bar (появляется, когда основная кнопка "Смотреть" уходит со скролла) =====
+  const ctaRow = document.getElementById('cta-row');
+  const stickyBar = document.getElementById('sticky-cta-bar');
+  if (ctaRow && stickyBar && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      ([entry]) => stickyBar.classList.toggle('visible', !entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(ctaRow);
+  }
+
+  // ===== Management dropdown (сообщества) =====
+  document.addEventListener('click', (e) => {
+    const toggle = e.target.closest('.manage-dropdown-toggle');
+    if (toggle) {
+      const menu = toggle.parentElement.querySelector('.manage-dropdown-menu');
+      const wasOpen = menu?.classList.contains('open');
+      document.querySelectorAll('.manage-dropdown-menu.open').forEach((m) => m.classList.remove('open'));
+      if (menu && !wasOpen) menu.classList.add('open');
+      return;
+    }
+    if (!e.target.closest('.manage-dropdown-menu')) {
+      document.querySelectorAll('.manage-dropdown-menu.open').forEach((m) => m.classList.remove('open'));
+    }
+  });
+
 });
 
 document.addEventListener('click', (e) => {

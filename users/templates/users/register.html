@@ -4,8 +4,9 @@
 
 {% block content %}
 <div class="auth-wrapper">
-  <div class="auth-card">
+  <div class="auth-card auth-card-wide">
     <h1>Регистрация</h1>
+    <p class="auth-subtitle">Присоединяйтесь к RV КИНО за минуту</p>
 
     <form method="post">
       {% csrf_token %}
@@ -25,6 +26,12 @@
 
       <button type="submit" class="btn auth-btn">Зарегистрироваться</button>
     </form>
+
+    <div class="auth-divider"><span></span>или<span></span></div>
+
+    <a href="{% url 'users:yandex_login' %}" class="btn-secondary oauth-btn">
+      <i class="fab fa-yandex"></i>Зарегистрироваться через Яндекс
+    </a>
 
     <p class="auth-extra">
       Уже есть аккаунт?

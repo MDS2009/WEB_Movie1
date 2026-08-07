@@ -5,84 +5,97 @@
 
 {% block content %}
 <section class="movies-section">
-  <div class="container">
-    <h1 style="margin-bottom: 1rem;">Поиск фильмов, сериалов, шоу и сообществ</h1>
-    <form class="catalog-filters" method="get">
-      <input type="text" name="q" placeholder="Поиск по названию или описанию" value="{{ query }}">
-      <select name="kind">
-        <option value="all" {% if kind == 'all' %}selected{% endif %}>Все</option>
-        <option value="movies" {% if kind == 'movies' %}selected{% endif %}>Фильмы</option>
-        <option value="series" {% if kind == 'series' %}selected{% endif %}>Сериалы</option>
-        <option value="shows" {% if kind == 'shows' %}selected{% endif %}>Шоу</option>
-        <option value="communities" {% if kind == 'communities' %}selected{% endif %}>Сообщества</option>
-      </select>
-      <select name="genre">
-        <option value="">Все жанры</option>
-        {% for g in genres %}
-          <option value="{{ g.slug }}" {% if genre == g.slug %}selected{% endif %}>{{ g.name }}</option>
-        {% endfor %}
-      </select>
-      <select name="sort">
-        <option value="new" {% if sort == 'new' %}selected{% endif %}>Сначала новые</option>
-        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>По рейтингу</option>
-        <option value="year" {% if sort == 'year' %}selected{% endif %}>По году</option>
-        <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>По популярности</option>
-        <option value="title" {% if sort == 'title' %}selected{% endif %}>По названию</option>
-      </select>
-      <button type="submit" class="btn">Найти</button>
-    </form>
-  </div>
-</section>
+  <div class="container search-page">
 
-<section class="movies-section">
-  <div class="container">
+    <form method="get" class="search-hero-form">
+      <div class="search-hero-input">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" name="q" placeholder="Название фильма, сериала, шоу или организации" value="{{ query }}" autofocus>
+        {% if query %}
+          <a href="?kind={{ kind }}" class="search-clear-btn" title="Очистить"><i class="fas fa-xmark"></i></a>
+        {% endif %}
+      </div>
+
+      <div class="filter-chips search-kind-chips">
+        <a href="?q={{ query|urlencode }}&kind=all" class="filter-chip{% if kind == 'all' %} active{% endif %}">Всё</a>
+        <a href="?q={{ query|urlencode }}&kind=movies" class="filter-chip{% if kind == 'movies' %} active{% endif %}">Фильмы</a>
+        <a href="?q={{ query|urlencode }}&kind=series" class="filter-chip{% if kind == 'series' %} active{% endif %}">Сериалы</a>
+        <a href="?q={{ query|urlencode }}&kind=shows" class="filter-chip{% if kind == 'shows' %} active{% endif %}">Шоу</a>
+        <a href="?q={{ query|urlencode }}&kind=communities" class="filter-chip{% if kind == 'communities' %} active{% endif %}">Организации</a>
+      </div>
+
+      {% if kind != 'communities' %}
+        <div class="search-secondary-filters">
+          <select name="genre">
+            <option value="">Все жанры</option>
+            {% for g in genres %}
+              <option value="{{ g.slug }}" {% if genre == g.slug %}selected{% endif %}>{{ g.name }}</option>
+            {% endfor %}
+          </select>
+          <select name="sort">
+            <option value="new" {% if sort == 'new' %}selected{% endif %}>Сначала новые</option>
+            <option value="rating" {% if sort == 'rating' %}selected{% endif %}>По рейтингу</option>
+            <option value="year" {% if sort == 'year' %}selected{% endif %}>По году</option>
+            <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>По популярности</option>
+            <option value="title" {% if sort == 'title' %}selected{% endif %}>По названию</option>
+          </select>
+          <button type="submit" class="btn">Применить</button>
+        </div>
+      {% else %}
+        <input type="hidden" name="kind" value="communities">
+      {% endif %}
+    </form>
+
     {% if search_active %}
-      <div class="movies-grid">
+      <p class="search-results-count">Найдено {{ search_results|length }} результат{{ search_results|length|pluralize:",а,ов" }}{% if query %} по запросу «{{ query }}»{% endif %}</p>
+
+      <div class="search-results-list">
         {% for item in search_results %}
           {% if item.kind == 'community' %}
-            <div class="movie-card">
-              <div class="org-pill" style="margin: 16px auto;">
-                <div class="org-avatar">
-                  {% if item.poster %}
-                    <img src="{{ item.poster }}" alt="{{ item.title }}">
-                  {% else %}
-                    <div class="org-avatar-placeholder">фото</div>
-                  {% endif %}
-                </div>
-                <div class="org-name">{{ item.title }}</div>
-                <a href="{% url 'movies:community_detail' item.id %}" class="btn" style="margin-top: 10px;">Подробнее</a>
+            <a href="{% url 'movies:community_detail' item.id %}" class="search-result-row">
+              <div class="search-result-thumb round">
+                {% if item.poster %}<img src="{{ item.poster }}" alt="{{ item.title }}">{% else %}<i class="fas fa-users"></i>{% endif %}
               </div>
-            </div>
+              <div class="search-result-info">
+                <div class="search-result-title">{{ item.title }}</div>
+                <div class="search-result-meta">Организация</div>
+              </div>
+              <span class="search-result-action outline">Открыть</span>
+            </a>
+          {% elif item.kind == 'news' %}
+            <a href="{% url 'movies:news_detail' item.id item.slug %}" class="search-result-row">
+              <div class="search-result-thumb">
+                {% if item.poster %}<img src="{{ item.poster }}" alt="{{ item.title }}">{% else %}<i class="fas fa-newspaper"></i>{% endif %}
+              </div>
+              <div class="search-result-info">
+                <div class="search-result-title">{{ item.title }}</div>
+                <div class="search-result-meta">Новость · {{ item.created_at|date:"d.m.Y" }}</div>
+              </div>
+              <i class="fas fa-chevron-right search-result-chevron"></i>
+            </a>
           {% else %}
-            <div class="movie-card">
-              {% if item.poster %}
-                <img src="{{ item.poster }}" alt="{{ item.title }}">
-              {% else %}
-                <div class="no-poster"><i class="fas fa-film"></i></div>
-              {% endif %}
-              <div class="movie-info">
-                <h3>{{ item.title }}</h3>
-                {% if item.year %}<p class="movie-year">{{ item.year }}</p>{% endif %}
-                {% if item.rating %}<p class="movie-rating"><i class="fas fa-star"></i> {{ item.rating }}</p>{% endif %}
-                {% if item.kind == 'movie' %}
-                  <a href="{% url 'movies:detail' item.id item.slug %}" class="btn">Подробнее</a>
-                {% elif item.kind == 'series' %}
-                  <a href="{% url 'movies:detail_series' item.id item.slug %}" class="btn">Подробнее</a>
-                {% elif item.kind == 'show' %}
-                  <a href="{% url 'movies:detail_show' item.id item.slug %}" class="btn">Подробнее</a>
-                {% endif %}
+            <a href="{% if item.kind == 'movie' %}{% url 'movies:detail' item.id item.slug %}{% elif item.kind == 'series' %}{% url 'movies:detail_series' item.id item.slug %}{% else %}{% url 'movies:detail_show' item.id item.slug %}{% endif %}" class="search-result-row">
+              <div class="search-result-thumb">
+                {% if item.poster %}<img src="{{ item.poster }}" alt="{{ item.title }}">{% else %}<i class="fas fa-film"></i>{% endif %}
               </div>
-            </div>
+              <div class="search-result-info">
+                <div class="search-result-title">{{ item.title }}</div>
+                <div class="search-result-meta">
+                  {% if item.kind == 'movie' %}Фильм{% elif item.kind == 'series' %}Сериал{% else %}Шоу{% endif %}
+                  {% if item.year %} · {{ item.year }}{% endif %}
+                  {% if item.rating %} · <i class="fas fa-star"></i> {{ item.rating }}{% endif %}
+                </div>
+              </div>
+              <span class="search-result-action"><i class="fas fa-play"></i></span>
+            </a>
           {% endif %}
         {% empty %}
           <p>Ничего не найдено.</p>
         {% endfor %}
       </div>
     {% else %}
-      <p>Введите запрос или выберите фильтры, чтобы начать поиск.</p>
+      <p class="search-hint">Введите запрос или выберите фильтры, чтобы начать поиск.</p>
     {% endif %}
   </div>
 </section>
-
 {% endblock %}
-

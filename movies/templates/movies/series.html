@@ -8,29 +8,42 @@
 </section>
 <section class="movies-section">
     <div class="container">
-        <form class="catalog-filters" method="get">
-            <input type="text" name="q" placeholder="Поиск по названию или описанию" value="{{ query }}">
-            <select name="sort">
-                <option value="new" {% if sort == 'new' %}selected{% endif %}>Сначала новые</option>
-                <option value="rating" {% if sort == 'rating' %}selected{% endif %}>По рейтингу</option>
-                <option value="year" {% if sort == 'year' %}selected{% endif %}>По году</option>
-                <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>По популярности</option>
-                <option value="title" {% if sort == 'title' %}selected{% endif %}>По названию</option>
-            </select>
-            <button type="submit" class="btn">Применить</button>
+        <form class="filter-row" method="get">
+            <label class="filter-search">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" name="q" placeholder="Поиск по названию или описанию" value="{{ query }}">
+            </label>
+            <div class="filter-chips">
+                <a href="?q={{ query|urlencode }}&sort=new" class="filter-chip{% if sort == 'new' %} active{% endif %}">Сначала новые</a>
+                <a href="?q={{ query|urlencode }}&sort=rating" class="filter-chip{% if sort == 'rating' %} active{% endif %}">По рейтингу</a>
+                <a href="?q={{ query|urlencode }}&sort=year" class="filter-chip{% if sort == 'year' %} active{% endif %}">По году</a>
+                <a href="?q={{ query|urlencode }}&sort=popularity" class="filter-chip{% if sort == 'popularity' %} active{% endif %}">По популярности</a>
+                <a href="?q={{ query|urlencode }}&sort=title" class="filter-chip{% if sort == 'title' %} active{% endif %}">По названию</a>
+            </div>
         </form>
         <div class="movies-grid">
             {% for series in series %}
             <div class="movie-card">
-                {% if series.poster %}
-                    <img src="{{ series.poster.url }}" alt="{{ series.title }}">
-                {% else %}
-                    <div class="no-poster"><i class="fas fa-film"></i></div>
-                {% endif %}
+                <div class="poster-frame">
+                    {% if series.poster %}
+                        <img src="{{ series.poster.url }}" alt="{{ series.title }}">
+                    {% else %}
+                        <div class="no-poster"><i class="fas fa-film"></i></div>
+                    {% endif %}
+                    {% if series.rating %}<span class="poster-badge-rating"><i class="fas fa-star"></i> {{ series.rating }}</span>{% endif %}
+                    {% if series.age_rating %}<span class="poster-badge-age">{{ series.age_rating }}</span>{% endif %}
+                    <div class="card-hover-overlay">
+                        <div class="card-quick-actions">
+                            <a href="{% url 'movies:detail_series' series.id series.slug %}" class="card-quick-btn play" title="Подробнее"><i class="fas fa-play"></i></a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'movies:favorite_series' series.id %}" class="card-quick-btn favorite" title="В избранное"><i class="fas fa-plus"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
                 <div class="movie-info">
                     <h3>{{ series.title }}</h3>
                     <p class="movie-year">{{ series.year }}</p>
-                    <p class="movie-rating"><i class="fas fa-star"></i> {{ series.rating }}</p>
                     <a href="{% url 'movies:detail_series' series.id series.slug %}" class="btn">Подробнее</a>
                 </div>
             </div>

@@ -13,15 +13,18 @@
             </div>
             <div class="info-column">
                 <h1>{{ community.name }}</h1>
-                
+
                 {% if community.created_by == request.user %}
-                  <div class="community-actions">
-                    <a href="{% url 'users:edit_community' community.id %}" class="btn btn-edit">Редактировать</a>
-                    <a href="{% url 'users:manage_community' community.id %}" class="btn btn-manage">Управление проектами</a>
-                    <a href="{% url 'users:manage_members' community.id %}" class="btn btn-members">Управление участниками</a>
+                  <div class="manage-dropdown">
+                    <button type="button" class="manage-dropdown-toggle"><i class="fas fa-ellipsis"></i>Управление</button>
+                    <div class="manage-dropdown-menu">
+                      <a href="{% url 'users:edit_community' community.id %}"><i class="fas fa-pen"></i>Редактировать</a>
+                      <a href="{% url 'users:manage_community' community.id %}"><i class="fas fa-film"></i>Управление проектами</a>
+                      <a href="{% url 'users:manage_members' community.id %}"><i class="fas fa-users"></i>Управление участниками</a>
+                    </div>
                   </div>
                 {% endif %}
-                
+
                 <div class="movie-meta">
                     <span><i class="fas fa-user"></i> Создатель: {{ community.created_by.username }}</span>
                     <span><i class="fas fa-users"></i> Участников: {{ community.members_users.count }}</span>
@@ -38,20 +41,21 @@
                     </div>
                 {% endif %}
 
-                {% if community.members_users.all %}
+                {% if members_with_roles %}
                     <div class="detail-description">
                         <h2>Участники организации</h2>
-                        <div class="members-grid">
-                            {% for member in community.members_users.all %}
-                                <div class="member-card">
-                                    <div class="member-avatar">
-                                        {% if member.profile.avatar %}
-                                            <img src="{{ member.profile.avatar.url }}" alt="{{ member.username }}">
+                        <div class="role-avatar-grid">
+                            {% for membership in members_with_roles %}
+                                <div class="role-avatar-item">
+                                    <div class="role-avatar-circle{% if membership.role == 'owner' %} owner{% endif %}">
+                                        {% if membership.user.profile.avatar %}
+                                            <img src="{{ membership.user.profile.avatar.url }}" alt="{{ membership.user.username }}">
                                         {% else %}
-                                            <div class="avatar-placeholder">{{ member.username.0|upper }}</div>
+                                            {{ membership.user.username.0|upper }}
                                         {% endif %}
                                     </div>
-                                    <div class="member-name">{{ member.get_full_name|default:member.username }}</div>
+                                    <span class="role-avatar-name">{{ membership.user.get_full_name|default:membership.user.username }}</span>
+                                    <span class="role-badge {{ membership.role }}">{{ membership.get_role_display }}</span>
                                 </div>
                             {% endfor %}
                         </div>
@@ -75,7 +79,7 @@
             {% for project in projects %}
                 <div class="movie-card">
                     {% if project.poster %}
-                        <img src="{{ project.poster.url }}" alt="{{ project.title }}">
+                        <img src="{{ project.poster }}" alt="{{ project.title }}">
                     {% else %}
                         <div class="no-poster">Нет постера</div>
                     {% endif %}

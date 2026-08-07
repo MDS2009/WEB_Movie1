@@ -34,14 +34,31 @@
                 </div>
               </div>
               {% if member != community.created_by %}
-                <form method="post" style="display: inline;">
-                  {% csrf_token %}
-                  <input type="hidden" name="action" value="remove">
-                  <input type="hidden" name="user_id" value="{{ member.id }}">
-                  <button type="submit" class="btn-remove" onclick="return confirm('Удалить {{ member.username }} из сообщества?')">
-                    Удалить
-                  </button>
-                </form>
+                <div class="member-actions">
+                  {% if member.membership_role == 'moderator' %}
+                    <form method="post" style="display: inline;">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="demote">
+                      <input type="hidden" name="user_id" value="{{ member.id }}">
+                      <button type="submit" class="btn-secondary" style="padding: 8px 14px; font-size: 13px;">Снять модератора</button>
+                    </form>
+                  {% else %}
+                    <form method="post" style="display: inline;">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="promote">
+                      <input type="hidden" name="user_id" value="{{ member.id }}">
+                      <button type="submit" class="btn-secondary" style="padding: 8px 14px; font-size: 13px;">Сделать модератором</button>
+                    </form>
+                  {% endif %}
+                  <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="remove">
+                    <input type="hidden" name="user_id" value="{{ member.id }}">
+                    <button type="submit" class="btn-remove" onclick="return confirm('Удалить {{ member.username }} из сообщества?')">
+                      Удалить
+                    </button>
+                  </form>
+                </div>
               {% else %}
                 <span class="creator-badge">Создатель</span>
               {% endif %}

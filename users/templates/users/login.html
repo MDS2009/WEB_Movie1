@@ -6,6 +6,7 @@
 <div class="auth-wrapper">
   <div class="auth-card">
     <h1>Войти в аккаунт</h1>
+    <p class="auth-subtitle">Смотрите фильмы и сериалы без ограничений</p>
     <form method="post">
       {% csrf_token %}
       <div class="form-group">
@@ -16,15 +17,20 @@
         <label for="id_password">Пароль</label>
         {{ form.password }}
       </div>
-      <p class="auth-extra" style="margin-top: 8px;">
+      <p class="auth-forgot-link">
         <a href="{% url 'users:password_reset_request' %}">Забыли пароль?</a>
       </p>
       <button type="submit" class="btn auth-btn">Войти</button>
     </form>
 
+    <div class="auth-divider"><span></span>или<span></span></div>
+
+    <a href="{% url 'users:yandex_login' %}" class="btn-secondary oauth-btn">
+      <i class="fab fa-yandex"></i>Войти через Яндекс
+    </a>
+
     <p class="auth-extra">
-      Нет аккаунта?
-      <a href="{% url 'users:register' %}">Регистрация</a>
+      Нет аккаунта? <a href="{% url 'users:register' %}">Зарегистрироваться</a>
     </p>
   </div>
 </div>

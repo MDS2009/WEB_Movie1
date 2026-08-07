@@ -34,6 +34,7 @@ class UserProfile(models.Model):
     accepted_terms = models.BooleanField(default=False)
     accepted_data_processing = models.BooleanField('Согласие на обработку персональных данных', default=False)
     accepted_at = models.DateTimeField(blank=True, null=True)
+    yandex_id = models.CharField('ID Яндекс', max_length=50, blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = 'Профиль пользователя'
@@ -58,14 +59,17 @@ class Community(models.Model):
     contact_info = models.CharField('Контактная информация', max_length=500, blank=True)
     avatar = models.ImageField('Аватар сообщества', upload_to='communities/', blank=True, null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_communities')
-    members_users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='communities')
+    members_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, blank=True, related_name='communities', through='CommunityMembership'
+    )
     is_active = models.BooleanField('Активно', default=True)
+    sort_order = models.PositiveIntegerField('Порядок отображения', default=0)
     created_at = models.DateTimeField('Создано', auto_now_add=True)
 
     class Meta:
         verbose_name = 'Сообщество'
         verbose_name_plural = 'Сообщества'
-        ordering = ['name']
+        ordering = ['sort_order', 'name']
 
     def __str__(self):
         return self.name
@@ -81,3 +85,30 @@ class Community(models.Model):
                 suffix += 1
             self.slug = slug
         super().save(*args, **kwargs)
+
+
+class CommunityMembership(models.Model):
+    """Роль пользователя в сообществе"""
+    ROLE_OWNER = 'owner'
+    ROLE_MODERATOR = 'moderator'
+    ROLE_MEMBER = 'member'
+    ROLE_CHOICES = [
+        (ROLE_OWNER, 'Владелец'),
+        (ROLE_MODERATOR, 'Модератор'),
+        (ROLE_MEMBER, 'Участник'),
+    ]
+
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name='memberships')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='community_memberships')
+    role = models.CharField('Роль', max_length=20, choices=ROLE_CHOICES, default=ROLE_MEMBER)
+    joined_at = models.DateTimeField('Вступил', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Участие в сообществе'
+        verbose_name_plural = 'Участия в сообществах'
+        constraints = [
+            models.UniqueConstraint(fields=['community', 'user'], name='unique_community_membership'),
+        ]
+
+    def __str__(self):
+        return f"{self.user} — {self.community} ({self.get_role_display()})"

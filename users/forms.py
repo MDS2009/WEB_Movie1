@@ -28,20 +28,10 @@ def _normalize_ru_phone(raw: str) -> str:
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(label='Email', required=False)
-    phone = forms.CharField(
-        label='Телефон (обязательное поле)', 
-        max_length=20, 
-        required=True, 
-        help_text='Нужен для входа и подтверждения аккаунта',
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Введите номер телефона',
-            'class': 'form-control'
-        })
-    )
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone', 'password1', 'password2']
+        fields = ['username', 'email', 'password1', 'password2']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
@@ -49,26 +39,9 @@ class UserRegisterForm(UserCreationForm):
             'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
-    def clean_phone(self):
-        phone = self.cleaned_data.get('phone')
-        if not phone:
-            raise ValidationError('Телефон является обязательным полем.')
-
-        phone = phone.strip()
-        normalized = _normalize_ru_phone(phone)
-
-        if UserProfile.objects.filter(phone=normalized).exists():
-            raise ValidationError('Пользователь с таким телефоном уже зарегистрирован.')
-
-        return normalized
-
     def save(self, commit=True):
         user = super().save(commit=commit)
-        phone = self.cleaned_data.get('phone')
-        profile, _ = UserProfile.objects.get_or_create(user=user)
-        if phone:
-            profile.phone = phone
-            profile.save(update_fields=['phone'])
+        UserProfile.objects.get_or_create(user=user)
         return user
 
 
@@ -80,14 +53,14 @@ class OrganizationRegisterForm(UserRegisterForm):
     )
 
     class Meta(UserRegisterForm.Meta):
-        fields = ['username', 'organization_name', 'email', 'phone', 'password1', 'password2']
+        fields = ['username', 'organization_name', 'email', 'password1', 'password2']
 
     def save(self, commit=True):
         user = super().save(commit=commit)
         profile, _ = UserProfile.objects.get_or_create(user=user)
         profile.is_organization = True
         profile.organization_name = self.cleaned_data.get('organization_name', '')
-        profile.save(update_fields=['phone', 'is_organization', 'organization_name'])
+        profile.save(update_fields=['is_organization', 'organization_name'])
         return user
 
 

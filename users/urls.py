@@ -17,6 +17,8 @@ urlpatterns = [
     ),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register_view, name='register'),
+    path('oauth/yandex/', views.yandex_login, name='yandex_login'),
+    path('oauth/yandex/callback/', views.yandex_callback, name='yandex_callback'),
     path(
         'password-reset/',
         auth_views.PasswordResetView.as_view(
@@ -48,6 +50,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('favorites/', views.favorites, name='favorites'),
+    path('my-communities/', views.my_communities, name='my_communities'),
     path('create-community/', views.create_community, name='create_community'),
     path('edit-community/<int:community_id>/', views.edit_community, name='edit_community'),
     path('manage-community/<int:community_id>/', views.manage_community, name='manage_community'),

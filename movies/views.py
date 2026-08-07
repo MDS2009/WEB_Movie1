@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from users.models import UserProfile
-from users.models import Community
+from users.models import Community, CommunityMembership
 
 from .forms import ReviewForm
 from .models import (
@@ -76,6 +76,11 @@ def index(request):
         .only('id', 'title', 'poster', 'rating', 'year', 'slug')
         .order_by('-created_at')[:12]
     )
+    shows = (
+        Show.objects.filter(is_active=True)
+        .only('id', 'title', 'poster', 'rating', 'year', 'slug')
+        .order_by('-created_at')[:12]
+    )
 
     slides = HeroSlide.objects.filter(is_active=True).select_related('movie', 'series')
     hero_items = []
@@ -125,13 +130,14 @@ def index(request):
     communities = (
         Community.objects.filter(is_active=True)
         .select_related('created_by')
-        .only('avatar', 'name', 'slug', 'created_by__id', 'created_by__username')
-        .order_by('name')[:24]
+        .only('avatar', 'name', 'slug', 'sort_order', 'created_by__id', 'created_by__username')
+        .order_by('sort_order', 'name')[:24]
     )
 
     context = {
         "movies": movies,
         "series": series,
+        "shows": shows,
         "hero_items": hero_items,
         "communities": communities,
         "page_title": "RV КИНО - Главная",
@@ -170,7 +176,7 @@ def search(request):
                     'views': None,
                     'created_at': community.created_at,
                 }
-                for community in communities_qs.order_by('name')[:24]
+                for community in communities_qs.order_by('sort_order', 'name')[:24]
             ]
         else:
             movies_qs = Movie.objects.filter(is_active=True)
@@ -205,6 +211,25 @@ def search(request):
                 ] + [
                     _build_item(obj, 'show') for obj in shows_qs.order_by(order_by)[:12]
                 ]
+
+                if query:
+                    news_qs = News.objects.filter(
+                        is_published=True, published_at__lte=timezone.now()
+                    ).filter(Q(title__icontains=query) | Q(content__icontains=query))
+                    combined += [
+                        {
+                            'kind': 'news',
+                            'id': item.id,
+                            'slug': item.slug,
+                            'title': item.title,
+                            'poster': item.image.url if item.image else '',
+                            'rating': None,
+                            'year': None,
+                            'views': None,
+                            'created_at': item.published_at,
+                        }
+                        for item in news_qs.order_by('-published_at')[:6]
+                    ]
 
                 reverse = order_by.startswith('-')
                 key_map = {
@@ -291,12 +316,20 @@ def movie_detail(request, movie_id, slug=None):
             messages.success(request, 'Отзыв добавлен.')
             return redirect('movies:detail', movie_id=movie.id, slug=movie.slug)
 
+    similar_items = (
+        Movie.objects.filter(is_active=True, genres__in=movie.genres.all())
+        .exclude(id=movie.id)
+        .distinct()
+        .order_by('-rating')[:10]
+    )
+
     context = {
         'movie': movie,
         'page_title': movie.title,
         'is_favorite': is_favorite,
         'reviews': reviews,
         'review_form': form,
+        'similar_items': similar_items,
     }
     response = render(request, 'movies/detail.html', context)
     if increment_view and not request.COOKIES.get(view_cookie):
@@ -376,12 +409,20 @@ def series_detail(request, series_id, slug=None):
             messages.success(request, 'Отзыв добавлен.')
             return redirect('movies:detail_series', series_id=series.id, slug=series.slug)
 
+    similar_items = (
+        Series.objects.filter(is_active=True, genres__in=series.genres.all())
+        .exclude(id=series.id)
+        .distinct()
+        .order_by('-rating')[:10]
+    )
+
     context = {
         'series': series,
         'page_title': series.title,
         'is_favorite': is_favorite,
         'reviews': reviews,
         'review_form': form,
+        'similar_items': similar_items,
     }
     response = render(request, 'movies/detail_series.html', context)
     if increment_view and not request.COOKIES.get(view_cookie):
@@ -447,12 +488,20 @@ def show_detail(request, show_id, slug=None):
             messages.success(request, 'Отзыв добавлен.')
             return redirect('movies:detail_show', show_id=show.id, slug=show.slug)
 
+    similar_items = (
+        Show.objects.filter(is_active=True, genres__in=show.genres.all())
+        .exclude(id=show.id)
+        .distinct()
+        .order_by('-rating')[:10]
+    )
+
     context = {
         'show': show,
         'page_title': show.title,
         'is_favorite': is_favorite,
         'reviews': reviews,
         'review_form': form,
+        'similar_items': similar_items,
     }
     response = render(request, 'movies/detail_show.html', context)
     if increment_view and not request.COOKIES.get(view_cookie):
@@ -611,9 +660,16 @@ def community_detail(request, community_id):
                 'views': comm_project.show.views,
             })
     
+    members_with_roles = list(
+        CommunityMembership.objects.filter(community=community)
+        .select_related('user', 'user__profile')
+        .order_by('-role', 'user__username')
+    )
+
     context = {
         'community': community,
         'projects': projects,
+        'members_with_roles': members_with_roles,
         'page_title': community.name,
     }
     return render(request, 'movies/community_detail.html', context)
